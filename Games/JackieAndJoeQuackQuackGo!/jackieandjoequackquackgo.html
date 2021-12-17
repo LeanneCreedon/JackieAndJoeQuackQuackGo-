@@ -1,0 +1,134 @@
+<html>
+
+    <head>
+        <title>Jackie and Joe Quack Quack Go!</title>
+    
+        <!-- Include Stylesheets -->
+        <link rel="stylesheet" href="css/jackieandjoequackquackgo.css" />
+    
+        <!-- Add JQuery Support -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    </head>
+    
+    <body>
+    
+        <!-- Create Title -->
+        <div id="title">
+            <h1>Jackie and Joe Quack Quack Go!</h1>
+        </div>
+    
+        <!-- Create Game Window -->
+        <div id="game_window" class="wrapper">
+    
+            <!-- Create Menus -->
+            <div id="menu_block">
+    
+                <!-- Main Menu -->
+                <div id="main_menu" class="menu">
+                    <ul>
+                        <li><a href="javascript:void(0)" id="PlayButton" class="button play"></a></li>
+                        <li><a href="javascript:void(0)" id="QuitButton" class="button exit"></a></li>
+                    </ul>
+                </div>
+    
+                <!-- Exit Menu -->
+                <div id="exit_menu" class="menu hidden">
+                    <h1>Thanks for playing!</h1>
+                </div>
+    
+                <!-- Add More Menu's Here -->
+    
+                <!-- 
+                    Check out the initialize function of MyMenuManager to see how menu's are
+                    hidden when the game starts.
+                -->
+            </div>
+
+            <!-- Create Canvas -->
+            <canvas id="main_canvas" width="980" height="600"></canvas>
+    </div>
+
+    <!-- Load Sprite Assets -->
+    <img id="background_sprite" class="sprite" src="assets/images/Backgound-Sprite.png">
+    <img id="main_menu" class="sprite" src="assets/images/MainMenu.png">
+
+    <img id="joe_sprite_sheet" class="sprite" src="assets/images/Joe_SpriteSheet.png">
+    <img id="jackie_sprite_sheet" class="sprite" src="assets/images/Jackie_SpriteSheet.png">
+    <img id="hunters_sprite_sheet" class="sprite" src="assets/images/Hunters_SpriteSheet.png">
+    <img id="pickups_sprite_sheet" class="sprite" src="assets/images/Pickups_SpriteSheet.png">
+    <img id="platform_sprite" class="sprite" src="assets/images/Platforms.png">
+    <img id="hud_sprite_sheet" class="sprite" src="assets/images/HUD_SpriteSheet.png">
+
+    <!-- Load Audio Assets -->
+    <audio preload="auto" id="sound_quack" src="assets/sound/effects/Duck Quack - Sound Effect (HD).wav"></audio>
+    <audio preload="auto" id="sound_duckling_quack" src="assets/sound/effects/Duckling Quack - Sound Effect (HD).wav"></audio>
+    <audio preload="auto" id="sound_health" src="assets/sound/effects/HealthPickup.wav"></audio>
+    <audio preload="auto" id="sound_jump" src="assets/sound/effects/JumpSoundEffect.wav"></audio>
+    <audio preload="auto" id="sound_gun" src="assets/sound/effects/Shotgun.wav"></audio>
+    <audio preload="auto" id="sound_lose" src="assets/sound/effects/YouLose.wav"></audio>
+    <audio preload="auto" id="sound_win" src="assets/sound/effects/YouWin.wav"></audio>
+    
+    <!-- Music assets -->
+    <audio preload="auto" id="background_music" src="assets/sound/music/BackgroundMusic.wav"></audio>
+    <audio preload="auto" id="menu_music" src="assets/sound/music/MenuMusic.mp3"></audio>
+
+    <!-- Load Engine Scripts -->
+    <script src="../../Engine/Constants/Constants.js"></script>
+    <script src="../../Engine/Time/GameTime.js"></script>
+
+    <script src="../../Engine/Time/StopWatch.js"></script>
+    <script src="../../Engine/Time/AnimationTimer.js"></script>
+
+    <script src="../../Engine/Utilities/GDUtilities.js"></script>
+
+    <script src="../../Engine/Types/Vector2.js"></script>
+    <script src="../../Engine/Types/Transform2D.js"></script>
+    <script src="../../Engine/Types/Rect.js"></script>
+    <script src="../../Engine/Types/Circle.js"></script>
+
+    <script src="../../Engine/Physics/Body.js"></script>
+    <script src="../../Engine/Physics/Collision.js"></script>
+
+    <script src="../../Engine/Notification/NotificationCenter.js"></script>
+
+    <script src="../../Engine/Artists/Base/Artist.js"></script>
+    <script src="../../Engine/Artists/Images/SpriteArtist.js"></script>
+    <script src="../../Engine/Artists/Images/AnimatedSpriteArtist.js"></script>
+    <script src="../../Engine/Artists/Images/ScrollingSpriteArtist.js"></script>
+    <script src="../../Engine/Artists/Primitives/RectangleSpriteArtist.js"></script>
+    <script src="../../Engine/Artists/Primitives/TextSpriteArtist.js"></script>
+
+    <script src="../../Engine/Actors/Base/Actor2D.js"></script>
+    <script src="../../Engine/Actors/Sprites/Sprite.js"></script>
+    <script src="../../Engine/Actors/Sprites/MoveableSprite.js"></script>
+    <script src="../../Engine/Actors/Cameras/Camera2D.js"></script>
+
+    <script src="../../Engine/Managers/ObjectManager.js"></script>
+    <script src="../../Engine/Managers/KeyboardManager.js"></script>
+    <script src="../../Engine/Managers/MouseManager.js"></script>
+    <script src="../../Engine/Managers/SoundManager.js"></script>
+    <script src="../../Engine/Managers/CameraManager.js"></script>
+    <script src="../../Engine/Managers/GameStateManager.js"></script>
+    <script src="../../Engine/Managers/MenuManager.js"></script>
+    <script src="../../Engine/Managers/UIManager.js"></script>
+
+    <script src="../../Engine/Parameters/ContextParameters.js"></script>
+    <script src="../../Engine/Debug/DebugDrawer.js"></script>
+
+    <!-- Load Game Scripts -->
+    <script src="js/Constants/Constants.js"></script>
+
+    <script src="js/Controllers/Camera/FlightCameraController.js"></script>
+    <script src="js/Controllers/Objects/ClickableObjectController.js"></script>
+    <script src="js/Controllers/Player/PlayerMoveController.js"></script>
+
+    <script src="js/Managers/MyGameStateManager.js"></script>
+    <script src="js/Managers/MyMenuManager.js"></script>
+    <script src="js/Managers/MyUIManager.js"></script>
+
+    <!-- Load Game -->
+    <script src="js/jackieandjoequackquackgo.js"></script>
+
+</body>
+
+</html>

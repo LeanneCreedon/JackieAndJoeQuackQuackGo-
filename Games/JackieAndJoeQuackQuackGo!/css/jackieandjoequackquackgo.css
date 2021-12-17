@@ -1,0 +1,124 @@
+body {
+    cursor: default;
+    user-select: none;
+    font-family: Vanilla;
+    font-size: 16px;
+
+    background-color: #218f003b;;
+}
+
+#title {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+#title h1 {
+    color: rgba(0, 0, 0, 0.596);
+}
+
+#game_window {
+    position: relative;
+    width: 980;
+    height: 600;
+    margin: 0 auto;
+
+    background-color: black;
+    border: 3px solid #218f00;
+    border-radius: 2px;
+}
+
+#menu_block {
+    position: absolute;
+    width: 850;
+    height: 468;
+    left: 0;
+    top: 0;
+
+    text-align: center;
+    color: white;
+}
+
+.menu {
+    position: absolute;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    width: 980;
+    height: 600;
+    left: 0;
+    top: 0;
+}
+
+#main_menu {
+    background-image: url('../assets/images/MainMenu.png');
+    background-color: black;
+}
+
+#exit_menu {
+    background-color: black;
+}
+
+#main_canvas {
+    left: 0;
+    top: 0;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0; 
+}
+
+li {
+    padding: 10px 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    text-shadow: -1px -1px 0 black;
+}
+
+#PlayButton {
+    
+    display: block;
+    margin-left: 335px;
+    margin-top: 47px;
+    width: 335;
+    height: 108;
+    border-radius: 11px;
+    background-image: url('../assets/images/MainMenuPlayButton.png');
+    
+}
+
+#QuitButton {
+ 
+    display: block;
+    margin-left:415px;
+    margin-top: 9px;
+    width: 174;
+    height: 74;
+ 
+    border-radius: 11px;
+    
+    background-image: url('../assets/images/MainMenuQuitButton.png');
+}
+
+#PlayButton:hover {
+    
+    background-image: url('../assets/images/MainMenuPlayButtonV2.png');
+}
+
+#QuitButton:hover {
+    background-image: url('../assets/images/MainMenuQuitButtonV2.png');
+}
+
+.sprite {
+    display: none;
+}
+
+.hidden {
+    opacity: 0;
+}
