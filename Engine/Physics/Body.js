@@ -74,6 +74,7 @@ class Body {
 
         this.jumping = false;
         this.onGround = false;
+        this.belowGround = false;
     }
 
     reset() {
@@ -83,6 +84,7 @@ class Body {
 
         this.jumping = false;
         this.onGround = false;
+        this.belowGround = false;
 
         this.maximumSpeed = this.originalMaximumSpeed;
         this.gravity = this.originalGravity;

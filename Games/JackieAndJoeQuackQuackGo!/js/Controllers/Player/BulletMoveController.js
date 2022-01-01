@@ -1,7 +1,7 @@
 /**
  * @author James Farrell
  */
-class BulletMoveController {
+ class BulletMoveController {
 
     /**
      * 
@@ -33,7 +33,7 @@ class BulletMoveController {
         this.updatePosition(gameTime, parent);
 
         this.handleEnemyCollision(parent);
-        this.handleDecoratorCollision(parent);
+        //this.handleDecoratorCollision(parent);
         this.handleExitCanvas(parent);
     }
 
@@ -85,51 +85,43 @@ class BulletMoveController {
                     )
                 );
 
-                // Play bading
-                this.notificationCenter.notify(
-                    new Notification(
-                        NotificationType.Sound,     // Type
-                        NotificationAction.Play,    // Action
-                        ["sound_bading"]            // Arguments
-                    )
-                );
             }
         }
     }
 
-    handleDecoratorCollision(parent) {
+    // handleDecoratorCollision(parent) {
 
-        // Get a list of all enemy sprites
-        let decoratorSprites = this.objectManager.sprites[ActorType.Decorator];
+    //     // Get a list of all enemy sprites
+    //     let decoratorSprites = this.objectManager.sprites[ActorType.Decorator];
 
-        // Loop through enemy sprites
-        for (let index = 0; index < decoratorSprites.length; index++) {
+    //     // Loop through enemy sprites
+    //     for (let index = 0; index < decoratorSprites.length; index++) {
 
-            // Store a reference to the current enemy
-            const decorator = decoratorSprites[index];
+    //         // Store a reference to the current enemy
+    //         const decorator = decoratorSprites[index];
 
-            // Store a reference to each bounding box
-            const bulletBoundingBox = parent.transform.boundingBox;
-            const decoratorBoundingBox = decorator.transform.boundingBox;
+    //         // Store a reference to each bounding box
+    //         const bulletBoundingBox = parent.transform.boundingBox;
+    //         const decoratorBoundingBox = decorator.transform.boundingBox;
 
-            // Check if the two bounding boxes are intersecting
-            if (bulletBoundingBox.intersects(decoratorBoundingBox)) {
+    //         // Check if the two bounding boxes are intersecting
+    //         if (bulletBoundingBox.intersects(decoratorBoundingBox)) {
 
-                // Remove bullet
-                this.notificationCenter.notify(
-                    new Notification(
-                        NotificationType.Sprite,    // Type
-                        NotificationAction.Remove,  // Action
-                        [parent]                    // Arguments
-                    )
-                );
-            }
-        }
-    }
+    //             // Remove bullet
+    //             this.notificationCenter.notify(
+    //                 new Notification(
+    //                     NotificationType.Sprite,    // Type
+    //                     NotificationAction.Remove,  // Action
+    //                     [parent]                    // Arguments
+    //                 )
+    //             );
+    //         }
+    //     }
+    // }
 
     handleExitCanvas(parent) {
 
-        // If the bullet has left the bounds of our canvas
+        // If the bullet has left the top bounds of our canvas
         if (parent.transform.translation.y < 0) {
 
             // Remove from object manager

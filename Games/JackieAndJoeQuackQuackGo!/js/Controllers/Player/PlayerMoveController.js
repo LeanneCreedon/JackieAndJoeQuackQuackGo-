@@ -79,7 +79,7 @@
             parent.body.velocityY = -this.jumpVelocity * gameTime.elapsedTimeInMs;
 
             // Create a jump sound notification
-            notificationCenter.notify(
+            this.notificationCenter.notify(
                 new Notification(
                     NotificationType.Sound,
                     NotificationAction.Play,
@@ -165,6 +165,12 @@
 
             }
 
+            // if (parent.transform.boundingBox.y < 605) {
+
+            //     // Update variables to represent their new state
+            //     parent.body.belowGround = true;
+            // }
+
             // If the player has collided with a platform that is above
             // them
             else if (collisionLocationType === CollisionLocationType.Top) {
@@ -200,7 +206,9 @@
 
                 // Create a notification that will ultimately remove
                 // the pickup sprite
-                notificationCenter.notify(
+
+                // REMOVE PICKUP ITEM
+                this.notificationCenter.notify(
                     new Notification(
                         NotificationType.Sprite,
                         NotificationAction.Remove,
@@ -208,14 +216,62 @@
                     )
                 );
 
-                notificationCenter.notify(
-                    new Notification(
-                        NotificationType.Sound,
-                        NotificationAction.Play,
-                        ["sound_duckling_quack"]
-                    )
-                );
-            
+                // Updated if statement from id === "Duckling" to id.includes("Duckling")
+                // This is because the id for the duckling may be Duckling - Clone 1 (in which case, using === would not work)
+                // Instead, we can use .includes to check if the id string includes the substring "Duckling" (in which case, "Duckling - Clone 1" does include the substring "Duckling")
+                if (pickup.id.includes("Duckling")) {
+                    // PLAY SOUND
+                    this.notificationCenter.notify(
+                        new Notification(
+                            NotificationType.Sound,
+                            NotificationAction.Play,
+                            ["sound_duckling_quack"]
+                        )
+                    );
+
+                    // I have also removed your UI code that was here
+                    
+                    // Instead, I have created a notification which will notify our game stayte manager of an inventory 
+                    // event. In the game state manager, I will deal with adding the pickup to the inventory, and with
+                    // sending a notification to update the UI
+
+                    this.notificationCenter.notify(
+                        new Notification(
+                            NotificationType.GameState,
+                            NotificationAction.Inventory,
+                            [pickup]
+                        )
+                    );
+                }
+
+                // Also note that I've updated this if statement
+                if (pickup.id.includes("Heart")) {
+
+                    // PLAY SOUND
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.Sound,
+                            NotificationAction.Play,
+                            ["sound_health"]
+                        )
+                    );
+
+                    // Create a new health notification. Pass through the ID of the player (i.e., Jackie or Joe), 
+                    // along with how much health that you want to add or remove from them (either +1 or -1)
+
+                    // Check out the handleHealth method of the game state manager class to see how this notification is handled
+
+                    // ADD TO PLAYER HEALTH
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.GameState,
+                            NotificationAction.Health,
+                            [parent.id, 1]
+                        )
+                    );
+                }
+
+
                 // Uncomment this code to see how we could remove ALL platforms    
                 // notificationCenter.notify(
                 //     new Notification(
@@ -243,7 +299,7 @@
         // Get a list of all the enemy sprites that are stored within
         // the object mananger
         const enemies = this.objectManager.get(ActorType.Enemy);
-
+        
         // If enemies is null, exit the function
         if (enemies == null) return;
 
@@ -252,21 +308,21 @@
 
             // Store a reference to the current enemy sprite
             const enemy = enemies[i];
-
+            
             // We can use a simple collision check here to check if the player has collided
             // with the enemy sprite
             if (parent.transform.boundingBox.intersects(enemy.transform.boundingBox)) {
 
                 // Your code here...
-
+                
                 // Play a sound?
                 // Remove the enemy?
                 // Update the player's health?
+                
 
                 // Uncomment the below code to create three notifications
                 // that will be fired if the player collides with a pickup
                 // sprite
-
                 notificationCenter.notify(
                     new Notification(
                         NotificationType.Sound,
@@ -274,7 +330,17 @@
                         ["sound_gun"]
                     )
                 );
+            
 
+                // DOESN'T WORK PROPERLY!
+                // notificationCenter.notify(
+                //     new Notification(
+                //         NotificationType.GameState,
+                //         NotificationAction.Health,
+                //         [parent.id, -1]
+                //     )
+                // ); 
+                
                 // notificationCenter.notify(
                 //   new Notification(
                 //     NotificationType.Sprite,
@@ -282,18 +348,11 @@
                 //     [enemy]
                 //   )
                 // );
-
-                // notificationCenter.notify(
-                //     new Notification(
-                //         NotificationType.GameState,
-                //         NotificationAction.Health,
-                //         [-5]
-                //     )
-                // );
             }
         }
     }
 
+    
     applyInput(parent) {
 
         // If the player is on the ground
@@ -301,6 +360,18 @@
 
             // Then remove any y velocity
             parent.body.velocityY = 0;
+        }
+
+        if (parent.body.belowGround) {
+
+            // Then remove any y velocity
+            notificationCenter.notify(
+                new Notification(
+                    NotificationType.GameState,
+                    NotificationAction.Health,
+                    [parent.id, -1]
+                )
+            );
         }
 
         // If the x velocity value is very small

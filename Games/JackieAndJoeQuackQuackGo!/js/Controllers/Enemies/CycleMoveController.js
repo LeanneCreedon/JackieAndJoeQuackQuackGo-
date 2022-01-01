@@ -6,20 +6,20 @@
  * @version 1.0
  * @class CycleMoveDescendController
  */
-class CycleMoveDescendController {
+class CycleMoveController {
 
     /**
      * 
      * @param {*} moveVector 
      * @param {*} maxMoveIncrements 
      * @param {*} intervalBetweenInMs 
-     * @param {*} descendVector 
+     * 
      */
-    constructor(moveVector, maxMoveIncrements, intervalBetweenInMs, descendVector) {
+     constructor(moveVector, maxMoveIncrements, intervalBetweenInMs, moveVelocity) {
         this.moveVector = moveVector;
         this.maxMoveIncrements = maxMoveIncrements;
         this.intervalBetweenInMs = intervalBetweenInMs;
-        this.descendVector = descendVector;
+        this.moveVelocity = moveVelocity;
 
         // Internal variables
         this.currentMoveIncrement = 0;
@@ -43,7 +43,7 @@ class CycleMoveDescendController {
                 // Calculate movement vector
                 let translateBy = Vector2.MultiplyScalar(
                     this.moveVector,
-                    this.moveDirection
+                    this.moveDirection,
                 );
 
                 // Move sprite
@@ -59,14 +59,12 @@ class CycleMoveDescendController {
                 // Invert move direction
                 this.moveDirection *= -1;
 
-                // Move sprite down
-                parent.transform.translateBy(this.descendVector);
-
                 // Reset move increment
                 this.currentMoveIncrement = 0;
 
                 // Reduce time to account for downwards movement
                 this.timeSinceLastMoveInMs = -this.intervalBetweenInMs;
+
             }
 
             // Increase move incremenets
@@ -82,11 +80,10 @@ class CycleMoveDescendController {
      * @returns 
      */
     clone() {
-        return new CycleMoveDescendController(
+        return new CycleMoveController(
             this.moveVector,
             this.maxMoveIncrements,
             this.intervalBetweenInMs,
-            this.descendVector
         );
     }
 };

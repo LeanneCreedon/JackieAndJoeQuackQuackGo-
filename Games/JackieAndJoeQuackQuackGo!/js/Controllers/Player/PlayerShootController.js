@@ -1,14 +1,15 @@
 /**
  * @author James Farrell
  */
-class PlayerShootController {
+ class PlayerShootController {
 
     /**
      * 
      * @param {*} notificationCenter 
      * @param {*} objectManager 
-     * @param {*} keyboardManager
+     * @param {*} keyboardManager 
      * @param {*} bulletSprite 
+     * @param {*} shootKey 
      * @param {*} fireIntervalMs 
      */
     constructor(
@@ -16,6 +17,7 @@ class PlayerShootController {
         objectManager,
         keyboardManager,
         bulletSprite,
+        shootKey,
         fireIntervalMs
     ) {
         this.notificationCenter = notificationCenter;
@@ -24,6 +26,7 @@ class PlayerShootController {
         this.keyboardManager = keyboardManager;
 
         this.bulletSprite = bulletSprite;
+        this.shootKey = shootKey;
         this.fireIntervalMs = fireIntervalMs;
 
         // Create internal time variable
@@ -38,7 +41,7 @@ class PlayerShootController {
     update(gameTime, parent) {
 
         // If the user is pressing the space bar
-        if (this.keyboardManager.isKeyDown(Keys.Space)) {
+        if (this.keyboardManager.isKeyDown(this.shootKey[0])) {
 
             // If enough time has passed since the last bullet was fired
             if (this.timeSinceLastBullet >= this.fireIntervalMs) {
@@ -46,6 +49,9 @@ class PlayerShootController {
                 // Clone the bullet sprite
                 let bullet = this.bulletSprite.clone();
 
+                // Set the bullet's animation take
+                bullet.artist.setTake("Default");
+                
                 // Update the status type of the bullet
                 bullet.statusType = StatusType.Updated | StatusType.Drawn;
 
@@ -61,14 +67,14 @@ class PlayerShootController {
                     )
                 );
 
-                // Play the shoot sound
-                this.notificationCenter.notify(
-                    new Notification(
-                        NotificationType.Sound,     // Type
-                        NotificationAction.Play,    // Action
-                        ["sound_shoot"]             // Arguments
-                    )
-                );
+                //Play the shoot sound
+                // this.notificationCenter.notify(
+                //     new Notification(
+                //         NotificationType.Sound,     // Type
+                //         NotificationAction.Play,    // Action
+                //         ["sound_gun"]             // Arguments
+                //     )
+                // );
 
                 // Reset time
                 this.timeSinceLastBullet = 0;

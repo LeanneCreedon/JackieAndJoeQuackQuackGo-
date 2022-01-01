@@ -111,28 +111,28 @@ class DebugDrawer {
             "Debug Info",
             x,
             y + yOffset,
-            "white"
+            "DarkGreen"
         );
 
         this.drawText(
             "--------------------------",
             x,
             y + 2 * yOffset,
-            "white"
+            "DarkGreen"
         );
 
         this.drawText(
             "Draw Count: " + drawCount,
             x,
             y + 3 * yOffset,
-            "white"
+            "DarkGreen"
         );
 
         this.drawText(
             "FPS: " + gameTime.fps + " ms",
             x,
             y + 4 * yOffset,
-            "white"
+            "DarkGreen"
         );
     }
 

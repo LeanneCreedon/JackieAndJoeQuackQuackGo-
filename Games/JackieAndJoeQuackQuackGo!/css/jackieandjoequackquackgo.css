@@ -65,6 +65,14 @@ body {
     top: 0;
 }
 
+#game_over_menu {
+    background-image: url('../assets/images/GameOverMenu.png');
+}
+
+#win_menu {
+    background-image: url('../assets/images/WonGameMenu.png');
+}
+
 ul {
     list-style: none;
     padding: 0;

@@ -69,7 +69,7 @@ const NotificationAction = {
     SetVolumeAll: "SetVolumeAll",
     ResetVolumeAll: "ResetVolumeAll",
 
-    UpdateHealthBar: "UpdateHealthBar",
+    Health: "Health",
     
     // Add more here as required
 };

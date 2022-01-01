@@ -18,7 +18,7 @@ let gameStateManager;
 let menuManager;
 let uiManager;
 
-const debugMode = false;
+const debugMode = true;
 
 function start() {
 
@@ -157,8 +157,7 @@ function initializeManagers() {
     gameStateManager = new MyGameStateManager(
         "Game State Manager",
         notificationCenter,
-        100,                            // Initial player health
-        36                              // Initial player ammo
+        3,                              // Initial player health
     )
 
     menuManager = new MyMenuManager(
@@ -222,7 +221,7 @@ function initializeCameras() {
                 Keys.Numpad4, Keys.Numpad6, Keys.Numpad7, Keys.Numpad9,
                 Keys.Numpad8, Keys.Numpad2, Keys.Numpad5
             ],
-            new Vector2(3, 0),
+            new Vector2(10, 0),
             Math.PI / 180,
             new Vector2(0.005, 0.005)
         )
@@ -234,19 +233,24 @@ function initializeCameras() {
 function initializeSprites() {
 
     initializeBackground();
+    EmptyCollsionBox();
     initializePlayer1();
-    //initializePlayer2();
+    initializePlayer2();
     initializePlatforms();
+    initializeMovingPlatforms()
     initializeHearts();
     initializeDucklings();
     initializeHunters();
 
     initializeHUDJoeHead();
     initializeHUDJackieHead();
+    initializeHUDDucklingsBox();
     initializeHUDDucklings();
     initializeOnScreenText();
     initializeJoesLives();
     initializeJackieLives();
+
+    initializeOtherDecorations();
 }
 
 function initializeBackground() {
@@ -289,48 +293,6 @@ function initializeBackground() {
     objectManager.add(sprite);
 }
 
-function initializeGround() {
-    
-
-    /* BOUNDING BOXES*/
-
-    /* GROUND */
-
-    let artist;
-    let transform;
-    let sprite = null;
-
-    artist = new SpriteArtist(
-        context,
-        1,
-        GameData.GROUND_DATA.spriteSheet,
-        GameData.GROUND_DATA.sourcePosition,
-        GameData.GROUND_DATA.sourceDimensions
-    );
-
-    transform = new Transform2D(
-        GameData.GROUND_DATA.translation,
-        GameData.GROUND_DATA.rotation,
-        GameData.GROUND_DATA.scale,
-        GameData.GROUND_DATA.origin,
-        GameData.GROUND_DATA.sourceDimensions,
-    );
-
-    sprite = new Sprite(
-        GameData.GROUND_DATA.id,
-        transform,
-        GameData.GROUND_DATA.actorType,
-        GameData.GROUND_DATA.collisionType,
-        StatusType.Updated | StatusType.Drawn,
-        artist,
-        GameData.GROUND_DATA.scrollSpeedMultiplier,
-        GameData.GROUND_DATA.layerDepth
-    );
-
-    // Add to object manager
-    objectManager.add(sprite);
-}
-
 function initializePlatforms() {
 
     let artist;
@@ -366,11 +328,6 @@ function initializePlatforms() {
         GameData.PLATFORM_DATA.layerDepth
     );
 
-    // Check out the Constant.js file - it contains an object called
-    // PLATFORM_DATA, which contains an array property called translationArray.
-    // This translationArray simply contains a list of positions for where we
-    // want to position the platforms on our screen. Take a look at this array
-    // to understand more.
     for (let i = 0; i < GameData.PLATFORM_DATA.translationArray.length; i++) {
 
         // Clone sprite
@@ -384,6 +341,166 @@ function initializePlatforms() {
 
         // Add to object manager
         objectManager.add(spriteClone);
+    }
+}
+
+function initializeMovingPlatforms() {
+
+    let artist;
+    let transform;
+
+    /************************ HORIZONTAL MOVING PLATFORMS ***************************/
+
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.H_MOVING_PLATFORM_DATA.spriteSheet,
+        GameData.H_MOVING_PLATFORM_DATA.sourcePosition,
+        GameData.H_MOVING_PLATFORM_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        Vector2.Zero,
+        GameData.H_MOVING_PLATFORM_DATA.rotation,
+        GameData.H_MOVING_PLATFORM_DATA.scale,
+        GameData.H_MOVING_PLATFORM_DATA.origin,
+        GameData.H_MOVING_PLATFORM_DATA.sourceDimensions,
+    );
+
+    let platformSpriteH = new MoveableSprite(
+        GameData.H_MOVING_PLATFORM_DATA.id,
+        transform,
+        GameData.H_MOVING_PLATFORM_DATA.actorType,
+        GameData.H_MOVING_PLATFORM_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.H_MOVING_PLATFORM_DATA.scrollSpeedMultiplier,
+        GameData.H_MOVING_PLATFORM_DATA.layerDepth
+    );
+
+    platformSpriteH.attachController(
+        new CycleMoveController(
+            new Vector2(1, 0),
+            710,
+            0,
+            GameData.H_MOVING_PLATFORM_DATA
+        )
+    );
+
+    for (let i = 0; i < GameData.H_MOVING_PLATFORM_DATA.translationArray.length; i++) {
+
+        // Clone sprite
+        platformSpriteHClone = platformSpriteH.clone();
+
+        // Update id
+        platformSpriteHClone.id = platformSpriteHClone.id + " " + i;
+
+        // Update translation
+        platformSpriteHClone.transform.setTranslation(GameData.H_MOVING_PLATFORM_DATA.translationArray[i]);
+
+        // Add to object manager
+        objectManager.add(platformSpriteHClone);
+    }
+
+    /************************ VERTICAL MOVING PLATFORMS ***************************/
+    
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.V_MOVING_PLATFORM_DATA.spriteSheet,
+        GameData.V_MOVING_PLATFORM_DATA.sourcePosition,
+        GameData.V_MOVING_PLATFORM_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        Vector2.Zero,
+        GameData.V_MOVING_PLATFORM_DATA.rotation,
+        GameData.V_MOVING_PLATFORM_DATA.scale,
+        GameData.V_MOVING_PLATFORM_DATA.origin,
+        GameData.V_MOVING_PLATFORM_DATA.sourceDimensions,
+    );
+
+    let platformSpriteV = new MoveableSprite(
+        GameData.V_MOVING_PLATFORM_DATA.id,
+        transform,
+        GameData.V_MOVING_PLATFORM_DATA.actorType,
+        GameData.V_MOVING_PLATFORM_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.V_MOVING_PLATFORM_DATA.scrollSpeedMultiplier,
+        GameData.V_MOVING_PLATFORM_DATA.layerDepth
+    );
+
+    platformSpriteV.attachController(
+        new CycleMoveController(
+            new Vector2(0, 1),
+            200,
+            0,
+            GameData.V_MOVING_PLATFORM_VELOCITY
+        )
+    );
+
+    for (let i = 0; i < GameData.V_MOVING_PLATFORM_DATA.translationArray.length; i++) {
+
+        // Clone sprite
+        platformSpriteVClone = platformSpriteV.clone();
+
+        // Update id
+        platformSpriteVClone.id = platformSpriteVClone.id + " " + i;
+
+        // Update translation
+        platformSpriteVClone.transform.setTranslation(GameData.V_MOVING_PLATFORM_DATA.translationArray[i]);
+
+        // Add to object manager
+        objectManager.add(platformSpriteVClone);
+    }
+}
+
+function EmptyCollsionBox()
+{
+    let artist;
+    let transform;
+
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.WALL_COLLISION_BOX_DATA.spriteSheet,
+        GameData.WALL_COLLISION_BOX_DATA.sourcePosition,
+        GameData.WALL_COLLISION_BOX_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        Vector2.Zero,
+        GameData.WALL_COLLISION_BOX_DATA.rotation,
+        GameData.WALL_COLLISION_BOX_DATA.scale,
+        GameData.WALL_COLLISION_BOX_DATA.origin,
+        GameData.WALL_COLLISION_BOX_DATA.sourceDimensions,
+    );
+
+    let collisionBoxSprite = new MoveableSprite(
+        GameData.WALL_COLLISION_BOX_DATA.id,
+        transform,
+        GameData.WALL_COLLISION_BOX_DATA.actorType,
+        GameData.WALL_COLLISION_BOX_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.WALL_COLLISION_BOX_DATA.scrollSpeedMultiplier,
+        GameData.WALL_COLLISION_BOX_DATA.layerDepth
+    );
+
+    for (let i = 0; i < GameData.WALL_COLLISION_BOX_DATA.translationArray.length; i++) {
+
+        // Clone sprite
+        collisionBoxSpriteClone = collisionBoxSprite.clone();
+
+        // Update id
+        collisionBoxSpriteClone.id = collisionBoxSpriteClone.id + " " + i;
+
+        // Update translation
+        collisionBoxSpriteClone.transform.setTranslation(GameData.WALL_COLLISION_BOX_DATA.translationArray[i]);
+
+        // Add to object manager
+        objectManager.add(collisionBoxSpriteClone);
     }
 }
 
@@ -406,7 +523,7 @@ function initializeHearts() {
     );
 
     transform = new Transform2D(
-        new Vector2(660, 370),                          // Translation
+        new Vector2(880, 140),                          // Translation
         0,                                              // Rotation
         new Vector2(
             0.2,
@@ -428,7 +545,7 @@ function initializeHearts() {
         1                                               // Layer depth
     );
 
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= 3; i++) {
 
         // Clone sprite
         spriteClone = spriteArchetype.clone();
@@ -437,12 +554,24 @@ function initializeHearts() {
         spriteClone.id = spriteClone.id + " " + i;
 
         // Translate sprite
-        spriteClone.transform.translateBy(
-            new Vector2(
-                (i * 500),
-                0
-            )
-        );
+        if(i==1 || i==3)
+        {
+            spriteClone.transform.translateBy(
+                new Vector2(
+                    (i * 1100),
+                    0
+                )
+            );
+        }
+        else
+        {
+            spriteClone.transform.translateBy(
+                new Vector2(
+                    (i * 1225),
+                    (i + 240)
+                )
+            );
+        }
 
         // Set sprite take
         spriteClone.artist.setTake("Anim1");
@@ -470,7 +599,7 @@ function initializeDucklings() {
     );
 
     transform = new Transform2D(
-        new Vector2(340, 456),                              // Translation
+        new Vector2(670, 201),                              // Translation
         0,                                                  // Rotation
         new Vector2(
             0.3,
@@ -492,7 +621,7 @@ function initializeDucklings() {
         1                                                   // Layer depth
     );
 
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= 3; i++) {
 
         // Clone sprite
         spriteClone = spriteArchetype.clone();
@@ -501,12 +630,34 @@ function initializeDucklings() {
         spriteClone.id = spriteClone.id + " " + i;
 
         // Translate sprite
-        spriteClone.transform.translateBy(
-            new Vector2(
-                (i * 200),
-                0
-            )
-        );
+        if(i==1)
+        {
+            spriteClone.transform.translateBy(
+                new Vector2(
+                    (i - 550),
+                    (i - 17)
+                )
+            );
+        }
+        if(i==2)
+        {
+            spriteClone.transform.translateBy(
+                new Vector2(
+                    (i * 1330),
+                    (i + 1)
+                )
+            );
+        }
+        else
+        {
+            spriteClone.transform.translateBy(
+                new Vector2(
+                    (i * 1530),
+                    (i + 273)
+                )
+            );
+        }
+        
 
         // Set sprite take
         spriteClone.artist.setTake("DucklingAnim1");
@@ -520,7 +671,52 @@ function initializePlayer1() {
 
     let transform;
     let artist;
-    let sprite;
+    
+    /*************************************** BULLET ***************************************/
+
+    artist = new AnimatedSpriteArtist(
+        context,                                    // Context
+        1,                                          // Alpha
+        GameData.BULLET_ANIMATION_DATA              // Animation data
+    );
+
+    artist.setTake("Default");
+
+    transform = new Transform2D(
+        Vector2.Zero,                               // Translation
+        0,                                          // Rotation
+        new Vector2(
+            0.4,
+            0.4
+        ),                                           // Scale
+        Vector2.Zero,                                 // Origin
+        artist.getBoundingBoxByTakeName("Default"),    // Dimensions
+        0                                            // Explode
+    );
+
+    let bulletSprite = new Sprite(
+        "Bullet",                               // Unique ID
+        transform,                              // Transform (Set up above)
+        ActorType.Projectile,                   // Projectile
+        CollisionType.Collidable,               // CollisionType
+        StatusType.Off,                         // Set this to off initially (we will change this later)
+        artist,                                 // Artist (Set up above)
+        1,
+        1
+    );
+
+    // Attach bullet controller to the bullet sprite
+    bulletSprite.attachController(
+        new BulletMoveController(
+            notificationCenter,
+            objectManager,
+            Vector2.Right,
+            GameData.BULLET_SPEED
+        )
+    );
+
+
+    /*************************************** PLAYER ***************************************/
 
     artist = new AnimatedSpriteArtist(
         context,                                                // Context
@@ -529,10 +725,79 @@ function initializePlayer1() {
     );
 
     // Set animation
-    artist.setTake("Idle");
+    artist.setTake("Facing Right");
 
     transform = new Transform2D(
         GameData.JOE_START_POSITION,                            // Translation
+        0,                                                      // Rotation
+        new Vector2(
+            0.5,
+            0.5
+        ),                                                      // Scale
+        Vector2.Zero,                                           // Origin
+        artist.getBoundingBoxByTakeName("Facing Right"),                // Dimensions
+        0                                                       // Explode By
+    );
+
+    let playerSprite = new MoveableSprite(
+        "Joe",                                               // ID
+        transform,                                              // Transform
+        ActorType.Player,                                       // ActorType
+        CollisionType.Collidable,                               // CollisionType
+        StatusType.Updated | StatusType.Drawn,                  // StatusType
+        artist,                                                 // Artist
+        1,                                                      // ScrollSpeedMultipler
+        1                                                       // LayerDepth
+    );
+
+    playerSprite.body.maximumSpeed = 6;
+    playerSprite.body.friction = FrictionType.Low;
+    playerSprite.body.gravity = GravityType.Weak;
+
+    
+    playerSprite.attachController(
+        new PlayerMoveController(
+            notificationCenter,
+            keyboardManager,
+            objectManager,
+            GameData.JOE_MOVE_KEYS,
+            GameData.JOE_RUN_VELOCITY,
+            GameData.JOE_JUMP_VELOCITY
+        )
+    );
+
+    playerSprite.attachController(
+        new PlayerShootController(
+            notificationCenter,
+            objectManager,
+            keyboardManager,
+            bulletSprite,
+            GameData.FIRE_INTERVAL
+        )
+    );
+
+    // Add sprite to object manager
+    objectManager.add(playerSprite);
+}
+
+function initializePlayer2() {
+
+    let transform;
+    let artist;
+    let sprite;
+
+
+    artist = new AnimatedSpriteArtist(
+        context,                                                // Context
+        1,                                                      // Alpha
+        GameData.JACKIE_ANIMATION_DATA                             // Animation Data
+    );
+
+    // Set animation
+    artist.setTake("Idle");
+
+    transform = new Transform2D(
+        GameData.JACKIE_START_POSITION,                            // Translation
         0,                                                      // Rotation
         new Vector2(
             0.5,
@@ -544,7 +809,7 @@ function initializePlayer1() {
     );
 
     sprite = new MoveableSprite(
-        "Player",                                               // ID
+        "Jackie",                                               // ID
         transform,                                              // Transform
         ActorType.Player,                                       // ActorType
         CollisionType.Collidable,                               // CollisionType
@@ -554,8 +819,6 @@ function initializePlayer1() {
         1                                                       // LayerDepth
     );
 
-    // Set characteristics of the body attached to the moveable sprite
-    // Play around with these values and see what happens.
     sprite.body.maximumSpeed = 6;
     sprite.body.friction = FrictionType.Low;
     sprite.body.gravity = GravityType.Weak;
@@ -566,18 +829,14 @@ function initializePlayer1() {
             notificationCenter,
             keyboardManager,
             objectManager,
-            GameData.JOE_MOVE_KEYS,
-            GameData.JOE_RUN_VELOCITY,
-            GameData.JOE_JUMP_VELOCITY
+            GameData.JACKIE_MOVE_KEYS,
+            GameData.JACKIE_RUN_VELOCITY,
+            GameData.JACKIE_JUMP_VELOCITY
         )
     );
 
     // Add sprite to object manager
     objectManager.add(sprite);
-}
-
-function initializePlayer2() {
-
 
 }
 
@@ -585,7 +844,8 @@ function initializeHunters() {
 
     let transform;
     let artist;
-    let sprite;
+
+    /************************** HUNTER ONE *************************/
 
     artist = new AnimatedSpriteArtist(
         context,                                                // Context
@@ -608,7 +868,7 @@ function initializeHunters() {
         0                                                       // Explode By
     );
 
-    sprite = new MoveableSprite(
+    let hunter1 = new MoveableSprite(
         "Enemy",                                               // ID
         transform,                                              // Transform
         ActorType.Enemy,                                       // ActorType
@@ -619,20 +879,136 @@ function initializeHunters() {
         1                                                       // LayerDepth
     );
 
-    // Set characteristics of the body attached to the moveable sprite
-    // Play around with these values and see what happens.
-    sprite.body.maximumSpeed = 6;
-    sprite.body.friction = FrictionType.Low;
-    sprite.body.gravity = GravityType.Weak;
+    hunter1.body.maximumSpeed = 6;
+    hunter1.body.friction = FrictionType.Low;
+    hunter1.body.gravity = GravityType.Weak;
 
     // TO DO: Add other controllers 
     // Add bee move controller...
     // Add bee shoot controller...
 
-    // Add enemy to object manager
-    objectManager.add(sprite);
-}
+    hunter1.attachController(
+        new CycleMoveController(
+            new Vector2(1, 0),
+            200,
+            0,
+            Vector2.Zero
+        )
+    );
 
+    // Add enemy to object manager
+    objectManager.add(hunter1);
+
+
+    /************************** HUNTER TWO *************************/
+
+     artist = new AnimatedSpriteArtist(
+        context,                                                // Context
+        1,                                                      // Alpha
+        GameData.HUNTER2_ANIMATION_DATA                          // Animation Data
+    );
+
+    // Set animation
+    artist.setTake("HunterAnim1Left");
+
+    transform = new Transform2D(
+        GameData.HUNTER2_START_POSITION,                            // Translation
+        0,                                                      // Rotation
+        new Vector2(
+            0.6,
+            0.6
+        ),                                                      // Scale
+        Vector2.Zero,                                           // Origin
+        artist.getBoundingBoxByTakeName("HunterAnim1Left"),                // Dimensions
+        0                                                       // Explode By
+    );
+
+    let hunter2 = new MoveableSprite(
+        "Enemy2",                                               // ID
+        transform,                                              // Transform
+        ActorType.Enemy,                                       // ActorType
+        CollisionType.Collidable,                               // CollisionType
+        StatusType.Updated | StatusType.Drawn,                  // StatusType
+        artist,                                                 // Artist
+        1,                                                      // ScrollSpeedMultipler
+        1                                                       // LayerDepth
+    );
+
+    hunter2.body.maximumSpeed = 6;
+    hunter2.body.friction = FrictionType.Low;
+    hunter2.body.gravity = GravityType.Weak;
+
+    // TO DO: Add other controllers 
+    // Add bee move controller...
+    // Add bee shoot controller...
+
+    hunter2.attachController(
+        new CycleMoveController(
+            new Vector2(1, 0),
+            400,
+            0,
+            Vector2.Zero
+        )
+    );
+
+    // Add enemy to object manager
+    objectManager.add(hunter2);
+
+
+     /************************** HUNTER THREE *************************/
+
+     artist = new AnimatedSpriteArtist(
+        context,                                                // Context
+        1,                                                      // Alpha
+        GameData.HUNTER3_ANIMATION_DATA                          // Animation Data
+    );
+
+    // Set animation
+    artist.setTake("HunterAnim1Left");
+
+    transform = new Transform2D(
+        GameData.HUNTER3_START_POSITION,                            // Translation
+        0,                                                      // Rotation
+        new Vector2(
+            0.6,
+            0.6
+        ),                                                      // Scale
+        Vector2.Zero,                                           // Origin
+        artist.getBoundingBoxByTakeName("HunterAnim1Left"),                // Dimensions
+        0                                                       // Explode By
+    );
+
+    let hunter3 = new MoveableSprite(
+        "Enemy3",                                               // ID
+        transform,                                              // Transform
+        ActorType.Enemy,                                       // ActorType
+        CollisionType.Collidable,                               // CollisionType
+        StatusType.Updated | StatusType.Drawn,                  // StatusType
+        artist,                                                 // Artist
+        1,                                                      // ScrollSpeedMultipler
+        1                                                       // LayerDepth
+    );
+
+    hunter3.body.maximumSpeed = 6;
+    hunter3.body.friction = FrictionType.Low;
+    hunter3.body.gravity = GravityType.Weak;
+
+    // TO DO: Add other controllers 
+    // Add bee move controller...
+    // Add bee shoot controller...
+
+    hunter3.attachController(
+        new CycleMoveController(
+            new Vector2(1, 0),
+            405,
+            0,
+            Vector2.Zero
+        )
+    );
+
+    // Add enemy to object manager
+    objectManager.add(hunter3);
+}
 
 
 /****************  HUD ITEMS  *******************/
@@ -663,15 +1039,6 @@ function initializeHUDJoeHead() {
         uiSpriteSheet,                                  // Spritesheet
         Vector2.Zero,                                   // Source Position
         new Vector2(83, 89),                            // Source Dimension
-        
-        // Set this to true if you want the sprite to stay in one
-        // position on the screen (i.e., the sprite WON'T scroll
-        // off-screen if the camera moves right or left).
-
-        // Set this to false if you want the sprite to move with
-        // the world (i.e., the sprite WILL scroll off-screen when
-        // the camera moves to the right or to the left.
-
         true                                            // Fixed Position
     );
 
@@ -704,7 +1071,7 @@ function initializeHUDJackieHead() {
             7,
             7
         ),                                              // Scale
-        new Vector2(-170, 15),
+        new Vector2(-160, 15),
         new Vector2(10, 10),
         0
     );
@@ -715,15 +1082,6 @@ function initializeHUDJackieHead() {
         uiSpriteSheet,                                  // Spritesheet
         new Vector2(182, 0),                                   // Source Position
         new Vector2(88, 95),                            // Source Dimension
-        
-        // Set this to true if you want the sprite to stay in one
-        // position on the screen (i.e., the sprite WON'T scroll
-        // off-screen if the camera moves right or left).
-
-        // Set this to false if you want the sprite to move with
-        // the world (i.e., the sprite WILL scroll off-screen when
-        // the camera moves to the right or to the left.
-
         true                                            // Fixed Position
     );
 
@@ -743,21 +1101,21 @@ function initializeHUDJackieHead() {
     
 }
 
-function initializeHUDDucklings() {
+function initializeHUDDucklingsBox() {
 
     let transform;
     let artist;
     let sprite;
 
     transform = new Transform2D(
-        new Vector2(20, 20),
+        new Vector2(800, 20), 
         0,
         new Vector2(
-            4.5,
-            4.5
+            0.6,
+            0.6
         ),                                              // Scale
-        new Vector2(-770, 10),
-        new Vector2(40, 20),
+        Vector2.Zero,  
+        new Vector2(270, 121),
         0
     );
 
@@ -765,17 +1123,8 @@ function initializeHUDDucklings() {
         context,                                        // Context
         1,                                              // Alpha
         uiSpriteSheet,                                  // Spritesheet
-        new Vector2(0, 108),                            // Source Position
-        new Vector2(270, 122),                          // Source Dimension
-        
-        // Set this to true if you want the sprite to stay in one
-        // position on the screen (i.e., the sprite WON'T scroll
-        // off-screen if the camera moves right or left).
-
-        // Set this to false if you want the sprite to move with
-        // the world (i.e., the sprite WILL scroll off-screen when
-        // the camera moves to the right or to the left.
-
+        new Vector2(0, 109),                            // Source Position
+        new Vector2(270, 121),                          // Source Dimension
         true                                            // Fixed Position
     );
 
@@ -793,6 +1142,70 @@ function initializeHUDDucklings() {
     // Add sprite to the object manager
     objectManager.add(sprite);
     
+}
+
+function initializeHUDDucklings() {
+
+    /******************   DUCKLINGS  *************************/
+
+    let artist;
+    let transform;
+
+    let spriteArchetype = null;
+    let spriteClone = null;
+
+    artist = new AnimatedSpriteArtist(
+        context,                                            // Context
+        1,
+        GameData.DUCKLING_ANIMATION_DATA, 
+        true                                               // Animation data
+    );
+
+    transform = new Transform2D(
+        new Vector2(759, 24.7),                             // Translation
+        0,                                                  // Rotation
+        new Vector2(                                        // Scale
+            0.19,
+            0.19
+        ),
+        Vector2.Zero,                                       // Origin
+        Vector2.Zero,                                       // Dimensions
+        0
+    );
+
+    spriteArchetype = new Sprite(
+        "HUD Duckling",                                     // ID
+        transform,
+        ActorType.HUD,
+        CollisionType.NotCollidable,
+        StatusType.Off,
+        artist,
+        1,                                                  // Scroll speed multiplier
+        1                                                   // Layer depth
+    );
+
+    for (let i = 1; i <= 3; i++) {
+
+        // Clone sprite
+        spriteClone = spriteArchetype.clone();
+
+        // Update ID
+        spriteClone.id = spriteClone.id + " " + i;
+
+        // Translate sprite
+        spriteClone.transform.translateBy(
+            new Vector2(
+                (i * 52),
+                0
+            )
+        );
+
+        // Set sprite take
+        spriteClone.artist.setTake("DucklingAnim1");
+
+        // Add to object manager
+        objectManager.add(spriteClone);
+    }
 }
 
 function initializeOnScreenText() {
@@ -821,15 +1234,6 @@ function initializeOnScreenText() {
         Color.Black,                    // Color
         TextAlignType.Left,             // Text Align
         200,                            // Max Width
-
-        // Set this to true if you want the sprite to stay in one
-        // position on the screen (i.e., the sprite WON'T scroll
-        // off-screen if the camera moves right or left).
-
-        // Set this to false if you want the sprite to move with
-        // the world (i.e., the sprite WILL scroll off-screen when
-        // the camera moves to the right or to the left.
-
         true                            // Fixed Position
     );
 
@@ -866,25 +1270,16 @@ function initializeJoesLives() {
     artist = new TextSpriteArtist(
         context,                        // Context
         1,                              // Alpha
-        "x03",                          // LIVES
+        "x0" + gameStateManager.joeHealth,                          // LIVES
         FontType.InformationLarge,     // Font Type
         Color.Black,                    // Color
         TextAlignType.Left,             // Text Align
         200,                            // Max Width
-
-        // Set this to true if you want the sprite to stay in one
-        // position on the screen (i.e., the sprite WON'T scroll
-        // off-screen if the camera moves right or left).
-
-        // Set this to false if you want the sprite to move with
-        // the world (i.e., the sprite WILL scroll off-screen when
-        // the camera moves to the right or to the left.
-
         true                            // Fixed Position
     );
 
     sprite = new Sprite(
-        "Text UI Info",
+        "JoeLives",
         transform,
         ActorType.HUD,
         CollisionType.NotCollidable,
@@ -905,7 +1300,7 @@ function initializeJackieLives() {
     let sprite;
 
     transform = new Transform2D(
-        new Vector2(280, 35),
+        new Vector2(265, 35),
         0,
         Vector2.One,
         Vector2.Zero,
@@ -916,25 +1311,16 @@ function initializeJackieLives() {
     artist = new TextSpriteArtist(
         context,                        // Context
         1,                              // Alpha
-        "x04",                          // LIVES
+        "x0"+gameStateManager.jackieHealth,                          // LIVES
         FontType.InformationLarge,     // Font Type
         Color.Black,                    // Color
         TextAlignType.Left,             // Text Align
         200,                            // Max Width
-
-        // Set this to true if you want the sprite to stay in one
-        // position on the screen (i.e., the sprite WON'T scroll
-        // off-screen if the camera moves right or left).
-
-        // Set this to false if you want the sprite to move with
-        // the world (i.e., the sprite WILL scroll off-screen when
-        // the camera moves to the right or to the left.
-
         true                            // Fixed Position
     );
 
     sprite = new Sprite(
-        "Text UI Info",
+        "JackieLives",
         transform,
         ActorType.HUD,
         CollisionType.NotCollidable,
@@ -946,6 +1332,169 @@ function initializeJackieLives() {
 
     // Add sprite to object manager
     objectManager.add(sprite);
+}
+
+function initializeOtherDecorations()
+{
+
+    /************************ BOXS *******************/
+
+    let artist;
+    let transform;
+    let boxSpriteClone = null;
+
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.BOX_DATA.spriteSheet,
+        GameData.BOX_DATA.sourcePosition,
+        GameData.BOX_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        Vector2.Zero,
+        GameData.BOX_DATA.rotation,
+        GameData.BOX_DATA.scale,
+        GameData.BOX_DATA.origin,
+        GameData.BOX_DATA.sourceDimensions,
+    );
+
+    let boxSprite = new Sprite(
+        GameData.BOX_DATA.id,
+        transform,
+        GameData.BOX_DATA.actorType,
+        GameData.BOX_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.BOX_DATA.scrollSpeedMultiplier,
+        GameData.BOX_DATA.layerDepth
+    );
+
+    for (let i = 0; i < GameData.BOX_DATA.translationArray.length; i++) {
+
+        // Clone sprite
+        boxSpriteClone = boxSprite.clone();
+
+        // Update id
+        boxSpriteClone.id = boxSpriteClone.id + " " + i;
+
+        // Update translation
+        boxSpriteClone.transform.setTranslation(GameData.BOX_DATA.translationArray[i]);
+
+        // Add to object manager
+        objectManager.add(boxSpriteClone);
+    }
+
+
+    /************************ HOUSE ***********************/
+
+
+    artist = new AnimatedSpriteArtist(
+        context,                                        // Context
+        1,
+        GameData.HOUSE_ANIMATION_DATA                   // Animation data
+    );
+
+    artist.setTake("HouseAnim1");
+
+    transform = new Transform2D(
+        new Vector2(6100, -14),                          // Translation
+        0,                                              // Rotation
+        Vector2.One,                                    // Scale
+        Vector2.Zero,                                   // Origin
+        artist.getBoundingBoxByTakeName("HouseAnim1"),  // Dimensions
+        0
+    );
+
+    let houseSprite = new Sprite(
+        "House",                                        // ID
+        transform,
+        ActorType.Environment,
+        CollisionType.Collidable,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        1,                                              // Scroll speed multiplier
+        1                                               // Layer depth
+    );
+
+    objectManager.add(houseSprite);
+
+
+/************************** SIGN ****************************/
+
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.SIGN_DATA.spriteSheet,
+        GameData.SIGN_DATA.sourcePosition,
+        GameData.SIGN_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        GameData.SIGN_DATA.translation,
+        GameData.SIGN_DATA.rotation,
+        GameData.SIGN_DATA.scale,
+        GameData.SIGN_DATA.origin,
+        GameData.SIGN_DATA.sourceDimensions,
+    );
+
+    let signSprite = new Sprite(
+        GameData.SIGN_DATA.id,
+        transform,
+        GameData.SIGN_DATA.actorType,
+        GameData.SIGN_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.SIGN_DATA.scrollSpeedMultiplier,
+        GameData.SIGN_DATA.layerDepth
+    );
+
+    objectManager.add(signSprite);
+
+
+    /****************** SPIKE TRAPS *******************/
+
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.SPIKE_TRAP_DATA.spriteSheet,
+        GameData.SPIKE_TRAP_DATA.sourcePosition,
+        GameData.SPIKE_TRAP_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        Vector2.Zero,
+        GameData.SPIKE_TRAP_DATA.rotation,
+        GameData.SPIKE_TRAP_DATA.scale,
+        GameData.SPIKE_TRAP_DATA.origin,
+        GameData.SPIKE_TRAP_DATA.sourceDimensions,
+    );
+
+    let spikeTrapSprite = new Sprite(
+        GameData.SPIKE_TRAP_DATA.id,
+        transform,
+        GameData.SPIKE_TRAP_DATA.actorType,
+        GameData.SPIKE_TRAP_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.SPIKE_TRAP_DATA.scrollSpeedMultiplier,
+        GameData.SPIKE_TRAP_DATA.layerDepth
+    );
+
+    for (let i = 0; i < GameData.SPIKE_TRAP_DATA.translationArray.length; i++) {
+
+        // Clone sprite
+        spikeTrapSpriteClone = spikeTrapSprite.clone();
+
+        // Update id
+        spikeTrapSpriteClone.id = spikeTrapSpriteClone.id + " " + i;
+
+        // Update translation
+        spikeTrapSpriteClone.transform.setTranslation(GameData.SPIKE_TRAP_DATA.translationArray[i]);
+
+        // Add to object manager
+        objectManager.add(spikeTrapSpriteClone);
+    }
 }
 
 

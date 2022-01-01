@@ -82,6 +82,12 @@ class MyMenuManager extends MenuManager {
         $('#exit_menu').hide();
         $('#exit_menu').addClass('hidden');
 
+        $('#game_over_menu').hide();
+        $('#game_over_menu').addClass('hidden');
+
+        $('#win_menu').hide();
+        $('#win_menu').addClass('hidden');
+
         // If the play button is clicked
         $('.play').click(function () {
 

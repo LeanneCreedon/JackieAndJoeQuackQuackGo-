@@ -26,9 +26,16 @@ class MyUIManager extends UIManager {
 
         switch (notification.notificationAction) {
 
-            case NotificationAction.UpdateHealthBar:
+            case NotificationAction.Health:
 
-                this.updateHealthBar(notification.notificationArguments[0]);
+                this.updateHealth(notification.notificationArguments);
+                break;
+
+
+            case NotificationAction.Inventory:
+
+                // Pass through the argument (which in this case, is the id of the pickup sprite)
+                this.updateInventory(notification.notificationArguments[0]);
                 break;
 
             default:
@@ -36,9 +43,73 @@ class MyUIManager extends UIManager {
         }
     }
 
-    updateHealthBar(health) {
+    updateHealth(argArray) {
 
-        // TO DO: Your code here...
+        // Extract the values from the notification array
+        const playerName = argArray[0];
+        const playerHealth = argArray[1];
+
+        // Get a list of all the HUD sprites in our object manager
+        const hudSprites = this.objectManager.get(ActorType.HUD);
+
+        // Loop through the HUD sprites
+        for (let i = 0; i < hudSprites.length; i++) {
+
+            // Grab a reference to the current HUD sprite
+            const hudSprite = hudSprites[i];
+
+            // Check if the ID of the HUD sprite includes the player name string
+            // i.e., "JoeLives"
+            if (hudSprite.id.includes(playerName + "Lives")) {
+
+                // Update the sprite's TextArtist text
+                hudSprite.artist.text = "x0" + playerHealth;
+            }
+        }
+    }
+
+    updateInventory(item) {
+
+        // So, how do we link the duckling pickup to the duckling HUD sprite?
+        // The easiest way to do this is to give these sprites a similar ID
+
+        // For example, imagine that you have a duckling sprite called "Duckling - Clone 1",
+        // and a HUD sprite called "HUD Duckling - Clone 1". In this case, the only difference 
+        // between the two, is that the HUD sprite has the string "HUD" added to it. 
+
+        // So, the string "Duckling - Clone 1" is a substring of "HUD Duckling - Clone 1".
+
+        // Thus, we can use the ID of our pickup (i.e., "Duckling - Clone 1"), to link it with the 
+        // matching HUD sprite (i.e., "HUD Duckling - Clone 1"), by checking if the pickup ID is a
+        // subtring of the HUD ID. 
+
+        // In which case,
+        // "Duckling - Clone 1" matches with "HUD Duckling - Clone 1"
+        // "Duckling - Clone 2" matches with "HUD Duckling - Clone 2"
+        // "Duckling - Clone 3" matches with "HUD Duckling - Clone 3"
+        // etc, etc.
+
+        // In this case, it is important that we design our ID's so that they can easily match each other
+        // For example "Duckling - Clone 1" would not match "Duckling HUD - Clone 1", because 
+        // "Duckling - Clone 1" is not a substring of "Duckling HUD - Clone 1".
+
+        // Get a list of all the HUD sprites in our object manager
+        const hudSprites = this.objectManager.get(ActorType.HUD);
+
+        // Loop through the HUD sprites
+        for (let i = 0; i < hudSprites.length; i++) {
+
+            // Grab a reference to the current HUD sprite
+            const hudSprite = hudSprites[i];
+
+            // Check if the ID of the HUD sprite includes the item string
+            // Remember, the item string is the ID of the pickup
+            if (hudSprite.id.includes(item)) {
+
+                // Update the status of the HUD sprite
+                hudSprite.statusType = StatusType.Updated | StatusType.Drawn;
+            }
+        }
     }
 
     /**
