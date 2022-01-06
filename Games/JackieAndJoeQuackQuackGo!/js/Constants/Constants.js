@@ -76,8 +76,10 @@ class GameData {
         scrollSpeedMultiplier: 0.2,
 
         translationArray: [
+          new Vector2(-160, 218),
           new Vector2(4800, 321),
           new Vector2(5600, 321),
+          new Vector2(6670, -5),
         ]
     };
 
@@ -328,7 +330,7 @@ class GameData {
 
   // HORIZONTAL MOVING PLATFORMS
   
-  static H_MOVING_PLATFORM_VELOCITY = 0.9; 
+  static H_MOVING_PLATFORM_VELOCITY = 0.8; 
 
   static H_MOVING_PLATFORM_DATA = {
 
@@ -352,7 +354,7 @@ class GameData {
   
   // VERTICAL MOVING PLATFORMS
 
-  static V_MOVING_PLATFORM_VELOCITY = 0.9; 
+  static V_MOVING_PLATFORM_VELOCITY = 0.5; 
 
   static V_MOVING_PLATFORM_DATA = {
 
@@ -389,7 +391,7 @@ class GameData {
     rotation: 0,
     scale: new Vector2(0.43, 0.43),
     origin: Vector2.Zero,
-    actorType: ActorType.Environment,
+    actorType: ActorType.Decorator,
     collisionType: CollisionType.Collidable,
     layerDepth: 5,
 
@@ -528,7 +530,22 @@ class GameData {
   
           frames: [
             new Rect(207, 0, this.DUCKLING_WIDTH, this.DUCKLING_HEIGHT),  // CLOSED BEAK
-            new Rect(4, 0, this.DUCKLING_WIDTH, this.DUCKLING_HEIGHT),    // Animation frame 2
+            new Rect(4, 0, this.DUCKLING_WIDTH, this.DUCKLING_HEIGHT),    // OPEN BEAK
+          ]
+        },
+
+        // Animation 2
+        "DucklingHUDAnim": {
+  
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 0,
+  
+          boundingBoxDimensions: new Vector2(this.DUCKLING_WIDTH, this.DUCKLING_HEIGHT),
+  
+          frames: [
+            new Rect(207, 0, this.DUCKLING_WIDTH, this.DUCKLING_HEIGHT),  // CLOSED BEAK
           ]
         },
       }
@@ -538,8 +555,10 @@ class GameData {
     // BULLET
     static BULLET_WIDTH = 35;
     static BULLET_HEIGHT = 35;
+
     static FIRE_INTERVAL = 1500;
-    static BULLET_SPEED = 0.5;
+    static ENEMY_FIRE_INTERVAL = 2500;
+    static BULLET_SPEED = 0.7;
 
     static BULLET_ANIMATION_DATA = {
 
@@ -552,7 +571,7 @@ class GameData {
                 frameRatePerSec: 2,
                 maxLoopCount: -1,
                 startFrameIndex: 0,
-                endFrameIndex: 1,
+                endFrameIndex: 0,
                 boundingBoxDimensions: new Vector2(this.BULLET_WIDTH, this.BULLET_HEIGHT),
                 frames: [
                     new Rect(0, 0, this.BULLET_WIDTH, this.BULLET_HEIGHT)
@@ -565,12 +584,13 @@ class GameData {
     // PLAYER
     static JOE_START_POSITION = new Vector2(175, 422);      //START POS
     static JOE_MOVE_KEYS = [Keys.A, Keys.D, Keys.Space];    // MOVE KEYS
+    static JOE_SHOOT_KEY = [Keys.S];                        // SHOOT KEY
     static JOE_RUN_VELOCITY = 0.1;                          // SPEED
     static JOE_JUMP_VELOCITY = 0.5;                         // JUMP SPEED
+
+    // DIMENSIONS
     static PLAYER1_WIDTH = 245;
     static PLAYER1_HEIGHT = 266;
-
-    static JOE_SHOOT_KEY = [Keys.S];
 
     static JOE_ANIMATION_DATA = {
 
@@ -581,7 +601,7 @@ class GameData {
       takes: {
   
         // Animation 1
-        "Facing Right": {
+        "Moving Right": {
   
           frameRatePerSec: 2,
   
@@ -595,79 +615,109 @@ class GameData {
   
           // Notice that I chose the largest of all the widths taken from the frames
           // array below
-          boundingBoxDimensions: new Vector2(245, 266),
+          boundingBoxDimensions: new Vector2(this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),
   
           frames: [
   
             // This list of rects just represent the positions
             // and dimension of each individual animation frame
             // on the sprite sheet
-            new Rect(1255, 534, this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),    // Animation frame 1
-            new Rect(250, 534, 214, 265),    // Animation frame 2
-          ]
-        },
-  
-        // Animation 2
-        "Facing Left": {
-  
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
-          maxLoopCount: -1,
-  
-          startFrameIndex: 0,
-          endFrameIndex: 8,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(245, 266),
-  
-          frames: [
-            new Rect(1255, 534, this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),     // Animation frame 1
+            new Rect(1255, 534, this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),    // Animation frame 0
+            new Rect(250, 534, 214, this.PLAYER1_HEIGHT),                    // Animation frame 1
           ]
         },
 
-        takes: {
+        // Animation 2
+        "Moving Left": {
   
-          // Animation 1
-          "Jump Right": {
-    
-            frameRatePerSec: 2,
-    
-            // -1 = Loop forever
-            //  0 = Run once (no loop)
-            //  N = Loop N times
-            maxLoopCount: -1,
-    
-            startFrameIndex: 0,
-            endFrameIndex: 0,
-    
-            // Notice that I chose the largest of all the widths taken from the frames
-            // array below
-            boundingBoxDimensions: new Vector2(230, 265),
-    
-            frames: [
-    
-              // This list of rects just represent the positions
-              // and dimension of each individual animation frame
-              // on the sprite sheet
-              new Rect(0, 0, 230, 265),    // Animation frame 2
-            ]
-          },
-        }
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+  
+          boundingBoxDimensions: new Vector2(this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),
+  
+          frames: [
+            new Rect(0, 1334, this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),       // Animation frame 0
+            new Rect(1018, 1334, this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),    // Animation frame 1
+          ]
+        },
+
+        // Animation 3
+        "Shooting Right": {
+  
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+  
+          boundingBoxDimensions: new Vector2(this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),
+  
+          frames: [
+            new Rect(231, 0, 255, 265),    // Animation frame 0
+            new Rect(989, 0, 255, 265),    // Animation frame 1
+          ]
+        },
+
+        // Animation 4
+        "Shooting Left": {
+          
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+
+          boundingBoxDimensions: new Vector2(255, 291),
+
+          frames: [
+            new Rect(1014, 800, 255, 291),    // Animation frame 0
+            new Rect(261, 800, 255, 291),     // Animation frame 1
+          ]
+        },
+
+        // Animation 5
+        "Jumping Left": {
+          
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+
+          boundingBoxDimensions: new Vector2(255, 291),
+
+          frames: [
+            new Rect(1270, 1334, 255, 291),    // Animation frame 0
+            new Rect(525, 1334, 255, 291),     // Animation frame 1
+          ]
+        },
+
+        // Animation 6
+        "Jumping Right": {
+          
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+
+          boundingBoxDimensions: new Vector2(255, 291),
+
+          frames: [
+            new Rect(0, 0, 255, 291),       // Animation frame 0
+            new Rect(769, 0, 255, 291),     // Animation frame 1
+          ]
+        },
       }
     };
 
-    static JACKIE_START_POSITION = new Vector2(30, 410);      //START POS
+    static JACKIE_START_POSITION = new Vector2(30, 410);                          //START POS
     static JACKIE_MOVE_KEYS = [Keys.ArrowLeft, Keys.ArrowRight, Keys.ArrowUp];    // MOVE KEYS
-    static JACKIE_RUN_VELOCITY = 0.1;                          // SPEED
-    static JACKIE_JUMP_VELOCITY = 0.5;                         // JUMP SPEED
+    static JACKIE_SHOOT_KEY = [Keys.Numpad0];                                     // SHOOT KEY
+    static JACKIE_RUN_VELOCITY = 0.1;                                             // SPEED
+    static JACKIE_JUMP_VELOCITY = 0.5;                                            // JUMP SPEED
+
+    // PLAYER 2 DIMENSIONS
     static PLAYER2_WIDTH = 245;
     static PLAYER2_HEIGHT = 291;
-
-    static JACKIE_SHOOT_KEY = [Keys.Numpad0];
 
     static JACKIE_ANIMATION_DATA = {
 
@@ -678,8 +728,8 @@ class GameData {
       takes: {
   
         // Animation 1
-        "Idle": {
-  
+        "Moving Right": {
+ 
           frameRatePerSec: 2,
   
           // -1 = Loop forever
@@ -692,72 +742,107 @@ class GameData {
   
           // Notice that I chose the largest of all the widths taken from the frames
           // array below
-          boundingBoxDimensions: new Vector2(245, 289),
-  
+          boundingBoxDimensions: new Vector2(this.PLAYER2_WIDTH, 289),
+          
           frames: [
   
             // This list of rects just represent the positions
             // and dimension of each individual animation frame
             // on the sprite sheet
             new Rect(0, 609, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),    // Animation frame 2
-            new Rect(1285, 609, 216, 291),    // Animation frame 2
+            new Rect(1285, 609, 216, this.PLAYER2_HEIGHT),    // Animation frame 2
           ]
         },
-  
+
         // Animation 2
-        "Run Left": {
+        "Moving Left": {
   
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 2,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 8,
+          endFrameIndex: 1,
   
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(245, 266),
+          boundingBoxDimensions: new Vector2(this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),
   
           frames: [
-            new Rect(0, 611, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),     // Animation frame 1
+            new Rect(1255, 1510, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),       // Animation frame 0
+            new Rect(-20, 1510, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),        // Animation frame 1
           ]
         },
-  
+
         // Animation 3
-        "Run Right": {
+        "Shooting Right": {
   
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 2,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 8,
+          endFrameIndex: 1,
   
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(245, 266),
+          boundingBoxDimensions: new Vector2(255, 291),
   
           frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-  
-            new Rect(0, 611, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),   // Animation frame 1
+            new Rect(764, 610, 255, 291),    // Animation frame 0
+            new Rect(1250, 0, 255, 291),     // Animation frame 1
+          ]
+        },
+
+        // Animation 3
+        "Shooting Left": {
+          
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+
+          boundingBoxDimensions: new Vector2(255, 291),
+
+          frames: [
+            new Rect(481, 1510, 255, 291),    // Animation frame 0
+            new Rect(0, 1510, 255, 291),     // Animation frame 1
+          ]
+        },
+
+        // Animation 3
+        "Jumping Left": {
+          
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+
+          boundingBoxDimensions: new Vector2(255, 291),
+
+          frames: [
+            new Rect(226, 1510, 255, 291),    // Animation frame 0
+            new Rect(1025, 1510, 255, 291),     // Animation frame 1
+          ]
+        },
+
+        // Animation 4
+        "Jumping Right": {
+          
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+
+          boundingBoxDimensions: new Vector2(255, 291),
+
+          frames: [
+            new Rect(1044, 610, 255, 291),    // Animation frame 0
+            new Rect(272, 610, 255, 291),     // Animation frame 1
           ]
         },
       }
     };
+
+    // HUNTER ENEMY ONE
     
     static HUNTER_START_POSITION = new Vector2(1800, 381);      //START POS
     static HUNTER_RUN_VELOCITY = 0.8;                          // SPEED
     static HUNTER_JUMP_VELOCITY = 0.5;                         // JUMP SPEED
+
+    // DIMENSIONS
     static HUNTER_WIDTH = 270;
     static HUNTER_HEIGHT = 290;
 
@@ -770,83 +855,78 @@ class GameData {
       takes: {
   
         // Animation 1
-        "HunterAnim1Left": {
+        "Moving Left": {
   
-          frameRatePerSec: 2,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 0,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 290),
+          endFrameIndex: 13,
+
+          boundingBoxDimensions: new Vector2(this.HUNTER_WIDTH, this.HUNTER_HEIGHT),
   
           frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-            new Rect(0, 288, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 2
+            new Rect(0, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 0
+            new Rect(276, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 1
+
+            new Rect(830, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 2
+            new Rect(276, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 3
+
+            new Rect(0, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 4
+            new Rect(555, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 5
+            
+            new Rect(0, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 6
+            new Rect(276, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 7
+
+            new Rect(0, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 8
+            new Rect(276, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 9
+
+            new Rect(0, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 10
+            new Rect(276, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 11
+
+            new Rect(0, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 12
+            new Rect(276, 303, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),  // Animation frame 13
           ]
         },
-  
+
         // Animation 2
-        "HunterAnim2Left": {
+        "Moving Right": {
   
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 8,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 289),
+          endFrameIndex: 13,
+
+          boundingBoxDimensions: new Vector2(this.HUNTER_WIDTH, this.HUNTER_HEIGHT),
   
           frames: [
-            new Rect(0, 591, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),     // Animation frame 1
-          ]
-        },
-  
-        // Animation 3
-        "HunterAnim1Right": {
-  
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
-          maxLoopCount: -1,
-  
-          startFrameIndex: 0,
-          endFrameIndex: 8,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 289),
-  
-          frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-  
-            new Rect(0, 591, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),   // Animation frame 1
+            new Rect(830, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 0
+            new Rect(554, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 1
+
+            new Rect(830, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 2
+            new Rect(554, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 3
+
+            new Rect(0, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
+            new Rect(554, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 5
+            
+            new Rect(830, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 6
+            new Rect(275, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 7
+
+            new Rect(830, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 8
+            new Rect(554, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 9
+
+            new Rect(830, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 10
+            new Rect(554, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 11
+
+            new Rect(830, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 12
+            new Rect(554, 1223, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 13
           ]
         },
       }
     };
 
-    static HUNTER2_START_POSITION = new Vector2(4100, 381);      //START POS
+    // HUNTER ENEMY TWO
+    static HUNTER2_START_POSITION = new Vector2(3100, 126);
+    
     static HUNTER2_ANIMATION_DATA = {
 
       id: "Hunter2 Animation Data",
@@ -856,84 +936,79 @@ class GameData {
       takes: {
   
         // Animation 1
-        "HunterAnim1Left": {
+        "Moving Left": {
   
-          frameRatePerSec: 2,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 0,
+          endFrameIndex: 13,
   
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
           boundingBoxDimensions: new Vector2(270, 290),
   
           frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-            new Rect(550, 589, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 2
+            new Rect(0, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 0
+            new Rect(830, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 1
+
+            new Rect(0, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
+            new Rect(830, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 3
+
+            new Rect(0, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
+            new Rect(551, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 5
+
+            new Rect(0, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 6
+            new Rect(830, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 7
+
+            new Rect(277, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 8
+            new Rect(830, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 9
+
+            new Rect(0, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 10
+            new Rect(830, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 11
+
+            new Rect(0, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 12
+            new Rect(830, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 13
+         
           ]
         },
-  
+
         // Animation 2
-        "HunterAnim2Left": {
+        "Moving Right": {
   
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 8,
+          endFrameIndex: 13,
   
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 289),
+          boundingBoxDimensions: new Vector2(270, 290),
   
           frames: [
-            new Rect(550, 589, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),     // Animation frame 1
-          ]
-        },
-  
-        // Animation 3
-        "HunterAnim1Right": {
-  
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
-          maxLoopCount: -1,
-  
-          startFrameIndex: 0,
-          endFrameIndex: 8,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 289),
-  
-          frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-  
-            new Rect(550, 589, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),   // Animation frame 1
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 0
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 1
+
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 3
+
+            new Rect(554, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 5
+
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 6
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 7
+
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 8
+            new Rect(278, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 9
+
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 10
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 11
+
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 12
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 13
+         
           ]
         },
       }
     };
 
     // HUNTER 3
-    static HUNTER3_START_POSITION = new Vector2(3100, 126);      //START POS
+    static HUNTER3_START_POSITION = new Vector2(4100, 381);      //START POS
     static HUNTER3_ANIMATION_DATA = {
 
       id: "Hunter3 Animation Data",
@@ -943,86 +1018,77 @@ class GameData {
       takes: {
   
         // Animation 1
-        "HunterAnim1Left": {
+        "Moving Left": {
   
-          frameRatePerSec: 2,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 0,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
+          endFrameIndex: 13,
+
           boundingBoxDimensions: new Vector2(270, 290),
   
           frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-            new Rect(550, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 2
+            new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 0
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 1
+
+            new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 3
+
+            new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 5
+
+            new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 6
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 7
+
+            new Rect(280, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 8
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 9
+
+            new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 10
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 11
+
+            new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 12
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 13
           ]
         },
+
+        // Animation 1
+        "Moving Right": {
   
-        // Animation 2
-        "HunterAnim2Left": {
-  
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
-          endFrameIndex: 8,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 289),
+          endFrameIndex: 13,
+
+          boundingBoxDimensions: new Vector2(270, 290),
   
           frames: [
-            new Rect(550, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),     // Animation frame 1
-          ]
-        },
-  
-        // Animation 3
-        "HunterAnim1Right": {
-  
-          frameRatePerSec: 12,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
-          maxLoopCount: -1,
-  
-          startFrameIndex: 0,
-          endFrameIndex: 8,
-  
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
-          boundingBoxDimensions: new Vector2(270, 289),
-  
-          frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-  
-            new Rect(550, 0, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),   // Animation frame 1
+            new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 0
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 1
+
+            new Rect(550, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
+            new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 3
+
+            new Rect(550, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
+            new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 5
+
+            new Rect(550, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 6
+            new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 7
+
+            new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 8
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 9
+
+            new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 10
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 11
+
+            new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 12
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 13
           ]
         },
       }
     };
 
-    
   }
   
-
   const FontType = {
     InformationSmall: "12px Vanilla",
     InformationMedium: "18px Vanilla",

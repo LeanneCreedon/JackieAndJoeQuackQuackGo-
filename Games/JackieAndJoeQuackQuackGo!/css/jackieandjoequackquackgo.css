@@ -65,12 +65,12 @@ body {
     top: 0;
 }
 
-#game_over_menu {
-    background-image: url('../assets/images/GameOverMenu.png');
+#lose_menu {
+    background-image: url('../assets/images/GameOverScreen.png');
 }
 
 #win_menu {
-    background-image: url('../assets/images/WonGameMenu.png');
+    background-image: url('../assets/images/LevelCompleteScreen.png');
 }
 
 ul {
@@ -89,11 +89,13 @@ a {
     text-shadow: -1px -1px 0 black;
 }
 
+/* MAIN MENU BUTTONS */
+
 #PlayButton {
     
     display: block;
     margin-left: 335px;
-    margin-top: 47px;
+    margin-top: 68px;
     width: 335;
     height: 108;
     border-radius: 11px;
@@ -104,14 +106,26 @@ a {
 #QuitButton {
  
     display: block;
-    margin-left:415px;
-    margin-top: 9px;
+    margin-left: 415px;
+    margin-top: 7px;
     width: 174;
     height: 74;
  
     border-radius: 11px;
     
     background-image: url('../assets/images/MainMenuQuitButton.png');
+}
+
+#AudioButton {
+    
+    display: block;
+    margin-left: 84px;
+    margin-top: -435px;
+    width: 54;
+    height: 50;
+    border-radius: 8px;
+    background-image: url('../assets/images/ToggleAudioButtonV2.png');
+    
 }
 
 #PlayButton:hover {
@@ -121,6 +135,69 @@ a {
 
 #QuitButton:hover {
     background-image: url('../assets/images/MainMenuQuitButtonV2.png');
+}
+
+#AudioButton:hover {
+    background-image: url('../assets/images/ToggleAudioButtonHover.png');
+}
+
+#AudioButton:focus {
+    background-image: url('../assets/images/ToggleAudioButton.png');
+}
+
+/* LOSE MENU BUTTONS */
+
+#TryAgainButton {
+    
+    display: block;
+    margin-left: 335px;
+    margin-top: -30px;
+    width: 335;
+    height: 108;
+    border-radius: 11px;
+    background-image: url('../assets/images/TryAgainButton.png');
+    
+}
+
+#MainMenuButton {
+ 
+    display: block;
+    margin-left:415px;
+    margin-top: 355px;
+    width: 174;
+    height: 74;
+ 
+    border-radius: 11px;
+    
+    background-image: url('../assets/images/MainMenuButtonV1.png');
+}
+
+#TryAgainButton:hover {
+    
+    background-image: url('../assets/images/TryAgainButtonHover.png');
+}
+
+#MainMenuButton:hover {
+    background-image: url('../assets/images/MainMenuButtonV2.png');
+}
+
+/* WIN MENU BUTTONS */
+
+#PlayAgainButton {
+    
+    display: block;
+    margin-left: 335px;
+    margin-top: -35px;
+    width: 335;
+    height: 108;
+    border-radius: 11px;
+    background-image: url('../assets/images/PlayAgainButtonV1.png');
+    
+}
+
+#PlayAgainButton:hover {
+    
+    background-image: url('../assets/images/PlayAgainButtonV2.png');
 }
 
 .sprite {

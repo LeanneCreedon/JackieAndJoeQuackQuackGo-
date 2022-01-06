@@ -13,6 +13,7 @@ class CycleMoveController {
      * @param {*} moveVector 
      * @param {*} maxMoveIncrements 
      * @param {*} intervalBetweenInMs 
+     * @param {*} moveVelocity 
      * 
      */
      constructor(moveVector, maxMoveIncrements, intervalBetweenInMs, moveVelocity) {
@@ -34,6 +35,9 @@ class CycleMoveController {
      */
     update(gameTime, parent) {
 
+        // Doesn't work, trying to add velocity to the movement
+        this.currentMoveIncrement*this.moveVelocity;
+
         // If enough time has passed since the sprite last moved
         if (this.timeSinceLastMoveInMs >= this.intervalBetweenInMs) {
 
@@ -48,7 +52,7 @@ class CycleMoveController {
 
                 // Move sprite
                 parent.transform.translateBy(translateBy);
-
+                
                 // Reset time
                 this.timeSinceLastMoveInMs = 0;
             }
@@ -61,6 +65,18 @@ class CycleMoveController {
 
                 // Reset move increment
                 this.currentMoveIncrement = 0;
+
+                // Change animation
+                if(this.moveDirection === 1) {
+                    if((parent.id === "Enemy") || (parent.id === "Enemy2") || (parent.id === "Enemy3")) {
+                        parent.artist.setTake("Moving Right");
+                    }
+                }
+                else {
+                    if((parent.id === "Enemy") || (parent.id === "Enemy2") || (parent.id === "Enemy3")) {
+                        parent.artist.setTake("Moving Left");
+                    }
+                }
 
                 // Reduce time to account for downwards movement
                 this.timeSinceLastMoveInMs = -this.intervalBetweenInMs;
@@ -84,6 +100,7 @@ class CycleMoveController {
             this.moveVector,
             this.maxMoveIncrements,
             this.intervalBetweenInMs,
+            this.moveVelocity,
         );
     }
 };

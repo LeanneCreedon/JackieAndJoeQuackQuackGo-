@@ -33,12 +33,12 @@
         this.updatePosition(gameTime, parent);
 
         this.handleEnemyCollision(parent);
-        //this.handleDecoratorCollision(parent);
+        this.handleDecoratorCollision(parent);
         this.handleExitCanvas(parent);
     }
 
     updatePosition(gameTime, parent) {
-
+        
         // Calculate velocity vector
         let velocity = Vector2.MultiplyScalar(
             this.moveDirection,
@@ -84,40 +84,40 @@
                         [parent]                    // Arguments
                     )
                 );
-
+                
             }
         }
     }
 
-    // handleDecoratorCollision(parent) {
+    handleDecoratorCollision(parent) {
 
-    //     // Get a list of all enemy sprites
-    //     let decoratorSprites = this.objectManager.sprites[ActorType.Decorator];
+        // Get a list of all decorator sprites
+        let decoratorSprites = this.objectManager.sprites[ActorType.Environment];
 
-    //     // Loop through enemy sprites
-    //     for (let index = 0; index < decoratorSprites.length; index++) {
+        // Loop through decorator sprites
+        for (let index = 0; index < decoratorSprites.length; index++) {
 
-    //         // Store a reference to the current enemy
-    //         const decorator = decoratorSprites[index];
+            // Store a reference to the current decorator
+            const decorator = decoratorSprites[index];
 
-    //         // Store a reference to each bounding box
-    //         const bulletBoundingBox = parent.transform.boundingBox;
-    //         const decoratorBoundingBox = decorator.transform.boundingBox;
+            // Store a reference to each bounding box
+            const bulletBoundingBox = parent.transform.boundingBox;
+            const decoratorBoundingBox = decorator.transform.boundingBox;
 
-    //         // Check if the two bounding boxes are intersecting
-    //         if (bulletBoundingBox.intersects(decoratorBoundingBox)) {
+            // Check if the two bounding boxes are intersecting
+            if (bulletBoundingBox.intersects(decoratorBoundingBox)) {
 
-    //             // Remove bullet
-    //             this.notificationCenter.notify(
-    //                 new Notification(
-    //                     NotificationType.Sprite,    // Type
-    //                     NotificationAction.Remove,  // Action
-    //                     [parent]                    // Arguments
-    //                 )
-    //             );
-    //         }
-    //     }
-    // }
+                // Remove bullet
+                this.notificationCenter.notify(
+                    new Notification(
+                        NotificationType.Sprite,    // Type
+                        NotificationAction.Remove,  // Action
+                        [parent]                    // Arguments
+                    )
+                );
+            }
+        }
+    }
 
     handleExitCanvas(parent) {
 

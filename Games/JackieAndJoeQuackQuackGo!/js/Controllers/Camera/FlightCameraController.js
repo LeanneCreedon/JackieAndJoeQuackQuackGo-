@@ -11,14 +11,16 @@
         keyboardManager, 
         moveKeys, 
         moveSpeed, 
-        rotateSpeedInRadians, 
-        scaleSpeed
+        scaleSpeed,
+        maxLeftMovement,
+        maxRightMovement
     ) {
         this.keyboardManager = keyboardManager;
         this.moveKeys = moveKeys;
         this.moveSpeed = moveSpeed;
-        this.rotateSpeedInRadians = rotateSpeedInRadians;
         this.scaleSpeed = scaleSpeed;
+        this.maxLeftMovement = maxLeftMovement;
+        this.maxRightMovement = maxRightMovement;
     }
 
     /**
@@ -27,6 +29,23 @@
      * @param {Actor2D} parent 
      */
     update(gameTime, parent) {
+
+        // ISN'T WORKING - Trying to stop the camera from moving off the edges of the map
+        // if(parent.transform > this.maxLeftMovement && parent.transform < this.maxRightMovement)
+        // {
+        //     // Translate camera
+        //     if (this.keyboardManager.isKeyDown(this.moveKeys[0])) {
+
+        //         // Move left
+        //         parent.transform.translateBy(Vector2.MultiplyScalar(this.moveSpeed, -1));
+        //     }
+
+        //     else if (this.keyboardManager.isKeyDown(this.moveKeys[1])) {
+
+        //         // Move right
+        //         parent.transform.translateBy(Vector2.MultiplyScalar(this.moveSpeed, 1));
+        //     }
+        // }
 
         // Translate camera
         if (this.keyboardManager.isKeyDown(this.moveKeys[0])) {
@@ -40,35 +59,9 @@
             // Move right
             parent.transform.translateBy(Vector2.MultiplyScalar(this.moveSpeed, 1));
         }
-
-        // Rotate camera
-        if (this.keyboardManager.isKeyDown(this.moveKeys[2])) {
-
-            // Rotate anti-clockwise
-            parent.transform.rotateBy(-this.rotateSpeedInRadians);
-        }
-
-        else if (this.keyboardManager.isKeyDown(this.moveKeys[3])) {
-
-            // Rotate clockwise
-            parent.transform.rotateBy(this.rotateSpeedInRadians);
-        }
-
-        // Scale camera
-        if (this.keyboardManager.isKeyDown(this.moveKeys[4])) {
-
-            // Scale up
-            parent.transform.scaleBy(Vector2.MultiplyScalar(this.scaleSpeed, 1));
-        }
-
-        else if (this.keyboardManager.isKeyDown(this.moveKeys[5])) {
-
-            // Scale down
-            parent.transform.scaleBy(Vector2.MultiplyScalar(this.scaleSpeed, -1));
-        }
-
+    
         // Reset camera
-        if (this.keyboardManager.isKeyDown(this.moveKeys[6])) {
+        if (this.keyboardManager.isKeyDown(this.moveKeys[2])) {
 
             // Reset
             parent.transform.reset();

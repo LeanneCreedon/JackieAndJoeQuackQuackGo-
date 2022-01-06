@@ -72,6 +72,26 @@ class MyMenuManager extends MenuManager {
 
             $('#main_menu').show();
         }
+
+        if (statusType != 2) {
+
+            $('#win_menu').hide();
+        }
+
+        else {
+
+            $('#win_menu').show();
+        }
+
+        if (statusType != 3) {
+
+            $('#lose_menu').hide();
+        }
+
+        else {
+
+            $('#lose_menu').show();
+        }
     }
 
     initialize() {
@@ -82,35 +102,102 @@ class MyMenuManager extends MenuManager {
         $('#exit_menu').hide();
         $('#exit_menu').addClass('hidden');
 
-        $('#game_over_menu').hide();
-        $('#game_over_menu').addClass('hidden');
-
         $('#win_menu').hide();
         $('#win_menu').addClass('hidden');
 
-        // If the play button is clicked
-        $('.play').click(function () {
+        $('#lose_menu').hide();
+        $('#lose_menu').addClass('hidden');
 
-            // Hide the menu
-            $('#main_menu').hide();
+        // TRYING TO GET IT TO CHECK IF IT IS ON THE MAIN MENU
+        // if('#main_menu')
+        // {
+            // If the play button is clicked
+            $('.play').click(function () {
 
-            // Send a notification to update and draw the game
-            notificationCenter.notify(
-                new Notification(
-                    NotificationType.Menu,
-                    NotificationAction.ShowMenuChanged,
-                    [StatusType.Updated | StatusType.Drawn]
-                )
-            );
-        });
+                // Hide the menu
+                $('#main_menu').hide();
 
-        // If the exit button is clicked
-        $('.exit').click(function () {
+                // Send a notification to update and draw the game
+                notificationCenter.notify(
+                    new Notification(
+                        NotificationType.Menu,
+                        NotificationAction.ShowMenuChanged,
+                        [StatusType.Updated | StatusType.Drawn]
+                    )
+                );
+            });
 
-            // Show exit menu
-            $('#exit_menu').show();
-            $('#exit_menu').removeClass('hidden');
-        });
+            $('.audio').click(function () {
+
+                // TURN ON AUDIO
+            });
+
+            // If the exit button is clicked
+            $('.exit').click(function () {
+
+                // Show exit menu
+                $('#exit_menu').show();
+                $('#exit_menu').removeClass('hidden');
+            });
+        //}
+
+        // FOR THE GAME OVER MENU SCREEN - SHOW WHEN BOTH PLAYERS DIE
+        // if('#lose_menu')
+        // {
+        //     // If the play button is clicked
+        //     $('.play').click(function () {
+
+        //         // Hide the menu
+        //         $('#lose_menu').hide();
+
+        //         // Send a notification to update and draw the game
+        //         notificationCenter.notify(
+        //             new Notification(
+        //                 NotificationType.Menu,
+        //                 NotificationAction.ShowMenuChanged,
+        //                 [StatusType.Updated | StatusType.Drawn]
+        //             )
+        //         );
+        //     });
+
+        //     // If the exit button is clicked
+        //     $('.menu').click(function () {
+
+        //         // Show exit menu
+        //         $('#main_menu').show();
+        //         $('#main_menu').removeClass('hidden');
+        //     });
+        // }
+
+        // FOR THE WIN SCREEN - 
+        // WANT IT TO SHOW AFTER TIMER WHEN PLAYER COLLIDES WITH HOUSE AT END OF LEVEL
+        // if('#win_menu')
+        // {
+        //     // If the play button is clicked
+        //     $('.play').click(function () {
+
+        //         // Hide the menu
+        //         $('#win_menu').hide();
+
+        //         // Send a notification to update and draw the game
+        //         notificationCenter.notify(
+        //             new Notification(
+        //                 NotificationType.Menu,
+        //                 NotificationAction.ShowMenuChanged,
+        //                 [StatusType.Updated | StatusType.Drawn]
+        //             )
+        //         );
+        //     });
+
+        //     // If the exit button is clicked
+        //     $('.menu').click(function () {
+
+        //         // Show exit menu
+        //         $('#main_menu').show();
+        //         $('#main_menu').removeClass('hidden');
+        //     });
+        // }
+        
     }
 
     update(gameTime) {

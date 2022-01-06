@@ -47,7 +47,7 @@
             parent.body.addVelocityX(-this.runVelocity * gameTime.elapsedTimeInMs);
 
             // Update the player's animation
-            // parent.artist.setTake("Run Left");
+            parent.artist.setTake("Moving Left");
         }
 
         // If the move right key is pressed
@@ -57,7 +57,7 @@
             parent.body.addVelocityX(this.runVelocity * gameTime.elapsedTimeInMs);
 
             // Update the player's animation
-            // parent.artist.setTake("Run Right");
+            parent.artist.setTake("Moving Right");
         }
     }
 
@@ -86,6 +86,7 @@
                     ["sound_jump"]
                 )
             );
+
         }
     }
 
@@ -110,6 +111,8 @@
         this.handlePlatformCollision(parent);
         this.handlePickupCollision(parent);
         this.handleEnemyCollision(parent);
+        this.handleSpikeTrapCollision(parent);
+        this.handleHouseCollision(parent);
     }
 
     handlePlatformCollision(parent) {
@@ -271,25 +274,6 @@
                     );
                 }
 
-
-                // Uncomment this code to see how we could remove ALL platforms    
-                // notificationCenter.notify(
-                //     new Notification(
-                //         NotificationType.Sprite,            // Who is registered to listen to this notification?        see ObjectManager -> registerForNotifications
-                //         NotificationAction.RemoveAllByType, // How does the ObjectManager handle the notification?      see ObjectManager -> handleSpriteNotification
-                //         [ActorType.Environment]                // What parameters does the method you are calling expect?  see ObjectManager -> removeAllByType()
-                //     )
-                // );
-
-                // Uncomment this code to see how we could remove the first platform that has an
-                // x position > 400
-                // notificationCenter.notify(
-                //     new Notification(
-                //         NotificationType.Sprite,
-                //         NotificationAction.RemoveFirstBy,
-                //         [ActorType.Environment, pickup => pickup.transform.translation.x > 400]
-                //     )
-                // );
             }
         }
     }
@@ -299,7 +283,8 @@
         // Get a list of all the enemy sprites that are stored within
         // the object mananger
         const enemies = this.objectManager.get(ActorType.Enemy);
-        
+        var initialCollision = true;
+
         // If enemies is null, exit the function
         if (enemies == null) return;
 
@@ -313,16 +298,7 @@
             // with the enemy sprite
             if (parent.transform.boundingBox.intersects(enemy.transform.boundingBox)) {
 
-                // Your code here...
-                
-                // Play a sound?
-                // Remove the enemy?
-                // Update the player's health?
-                
-
-                // Uncomment the below code to create three notifications
-                // that will be fired if the player collides with a pickup
-                // sprite
+                // PLAY SOUND
                 notificationCenter.notify(
                     new Notification(
                         NotificationType.Sound,
@@ -330,28 +306,142 @@
                         ["sound_gun"]
                     )
                 );
-            
-
-                // DOESN'T WORK PROPERLY!
-                // notificationCenter.notify(
-                //     new Notification(
-                //         NotificationType.GameState,
-                //         NotificationAction.Health,
-                //         [parent.id, -1]
-                //     )
-                // ); 
-                
-                // notificationCenter.notify(
-                //   new Notification(
-                //     NotificationType.Sprite,
-                //     NotificationAction.RemoveFirst,
-                //     [enemy]
-                //   )
-                // );
+                // INITIAL COLLISION
+                if(initialCollision) {
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.GameState,
+                            NotificationAction.Health,
+                            [parent.id, -1]
+                        )
+                    ); 
+                    initialCollision = false;
+                }
+                else {
+                    // DOESN'T WORK PROPERLY - Should minus off 1 life every second
+                    setTimeout(function() {
+                        notificationCenter.notify(
+                            new Notification(
+                                NotificationType.GameState,
+                                NotificationAction.Health,
+                                [parent.id, -1]
+                            )
+                        ); 
+                    }, 1000);
+                }
             }
         }
     }
 
+    handleSpikeTrapCollision(parent) {
+
+        // Get a list of all the enemy sprites that are stored within
+        // the object mananger
+        const spikeTraps = this.objectManager.get(ActorType.Environment);
+        
+        // If enemies is null, exit the function
+        if (spikeTraps == null) return;
+
+        // Loop through the list of enemy sprites
+        for (let i = 0; i < spikeTraps.length; i++) {
+
+            // Store a reference to the current enemy sprite
+            const spikeTrap = spikeTraps[i];
+            
+            // We can use a simple collision check here to check if the player has collided
+            // with the enemy sprite
+
+            // UNSURE HOW TO CHECK IF PLAYER LANDED ON SPIKE TRAP
+            if (spikeTrap.id.includes("Trap")) {   
+
+                //-----------------------------------------------------------
+                let collisionLocationType = Collision.GetCollisionLocationType(
+                    parent,
+                    spikeTrap
+                );
+
+                // If the player has ran into a Spike trap that is to the
+                // left or to the right of them
+                if (
+                    collisionLocationType === CollisionLocationType.Left ||
+                    collisionLocationType === CollisionLocationType.Right
+                ) {
+
+                    // Reduce their horizontal velocity to 0, to stop them
+                    // from moving
+                    parent.body.velocityX = 0;
+                }
+
+                // If the player has landed on a platform
+                else if (collisionLocationType === CollisionLocationType.Bottom) {
+
+                    // Update variables to represent their new state
+                    parent.body.onGround = true;
+                    parent.body.jumping = false;
+
+                    // Again, same problem as with the hunters, keeps taking away player health
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.GameState,
+                            NotificationAction.Health,
+                            [parent.id, -1]
+                        )
+                    );
+
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.Sound,
+                            NotificationAction.Play,
+                            ["sound_quack"]
+                        )
+                    );
+
+                }
+            }
+        }
+    }
+
+    handleHouseCollision(parent) {
+
+        // Get a list of all the enemy sprites that are stored within
+        // the object mananger
+        const decorators = this.objectManager.get(ActorType.Decorator);
+        
+        // If house is null, exit the function
+        if (decorators == null) return;
+
+        for (let i = 0; i < decorators.length; i++) {
+
+        // Store a reference to the current enemy sprite
+        const house = decorators[i];
+
+        if (parent.transform.boundingBox.intersects(house.transform.boundingBox)) {
+
+            // If player collides with the house
+            if (house.id.includes("House")) {   
+            
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.Sound,
+                            NotificationAction.Play,
+                            ["sound_win"]
+                        )
+                    );
+
+                    // TRYING TO SET THE GAME STATE TO WIN, AND SHOW THE WIN SCREEN
+                    setTimeout(function() {
+                        notificationCenter.notify(
+                            new Notification(
+                                NotificationType.GameState,
+                                NotificationAction.Win,
+                                [parent]
+                            )
+                        ); 
+                    }, 5000);
+                }
+            }
+        }
+    }
     
     applyInput(parent) {
 
@@ -362,14 +452,21 @@
             parent.body.velocityY = 0;
         }
 
-        if (parent.body.belowGround) {
+        /*******  NOT WORKING PROPERLY! *******/
 
-            // Then remove any y velocity
+        // Trying to chck if the player has fallen
+        // off the cliff. So if their current 
+        // position is below the platforms. 
+        // I want the player to lose all their
+        // lives so that is shows as zero.
+
+        if (parent.body.belowGround) {
+            // Then take away all of their lives
             notificationCenter.notify(
                 new Notification(
                     NotificationType.GameState,
                     NotificationAction.Health,
-                    [parent.id, -1]
+                    [parent.id, -parent.Health]
                 )
             );
         }

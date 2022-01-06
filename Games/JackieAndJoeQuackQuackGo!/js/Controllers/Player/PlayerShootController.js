@@ -40,7 +40,7 @@
      */
     update(gameTime, parent) {
 
-        // If the user is pressing the space bar
+        // If the user is pressing shoot button
         if (this.keyboardManager.isKeyDown(this.shootKey[0])) {
 
             // If enough time has passed since the last bullet was fired
@@ -67,14 +67,34 @@
                     )
                 );
 
+                // ISSUE: WHEN PLAYER IS FACING LEFT, IT SHOULD CHANGE TO "Shooting Left"
+                //if(parent.moveDirection === 1) {
+                    parent.artist.setTake("Shooting Right");
+
+                    // HELP WITH THIS CODE FROM THE FOLLOWING SITE:
+                    // https://www.freecodecamp.org/news/javascript-settimeout-how-to-set-a-timer-in-javascript-or-sleep-for-n-seconds/
+                    //--------------------------------------------
+                    setTimeout(function(){
+                        parent.artist.setTake("Moving Right");
+                    }, 1000);
+                    //--------------------------------------------
+                //}
+                // else if(parent.moveDirection === -1) {
+                //     parent.artist.setTake("Shooting Left");
+
+                //     setTimeout(function(){
+                //         parent.artist.setTake("Moving Left");
+                //     }, 1000);
+                // }
+                
                 //Play the shoot sound
-                // this.notificationCenter.notify(
-                //     new Notification(
-                //         NotificationType.Sound,     // Type
-                //         NotificationAction.Play,    // Action
-                //         ["sound_gun"]             // Arguments
-                //     )
-                // );
+                this.notificationCenter.notify(
+                    new Notification(
+                        NotificationType.Sound,     // Type
+                        NotificationAction.Play,    // Action
+                        ["sound_gun"]              // Arguments
+                    )
+                );
 
                 // Reset time
                 this.timeSinceLastBullet = 0;

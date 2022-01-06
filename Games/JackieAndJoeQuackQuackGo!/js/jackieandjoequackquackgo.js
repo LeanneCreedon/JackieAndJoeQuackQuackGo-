@@ -4,6 +4,7 @@ const canvas = document.getElementById("main_canvas");
 // GET HANDLE TO CANVAS 2D CONTEXT
 const context = canvas.getContext("2d");
 
+
 /* CORE GAME LOOP CODE */
 
 let gameTime;
@@ -18,7 +19,7 @@ let gameStateManager;
 let menuManager;
 let uiManager;
 
-const debugMode = true;
+const debugMode = false;
 
 function start() {
 
@@ -218,14 +219,26 @@ function initializeCameras() {
         new FlightCameraController(
             keyboardManager,
             [
-                Keys.Numpad4, Keys.Numpad6, Keys.Numpad7, Keys.Numpad9,
-                Keys.Numpad8, Keys.Numpad2, Keys.Numpad5
+                Keys.Numpad4, Keys.Numpad6, Keys.Numpad5
             ],
-            new Vector2(10, 0),
-            Math.PI / 180,
+            new Vector2(8, 0),
             new Vector2(0.005, 0.005)
         )
     );
+
+    // DOESN'T WORK!
+    // camera.attachController(
+    //     new FlightCameraController(
+    //         keyboardManager,
+    //         [
+    //             Keys.Numpad4, Keys.Numpad6, Keys.Numpad5
+    //         ],
+    //         new Vector2(8, 0),
+    //         new Vector2(0.005, 0.005),
+    //         new Vector2(0, 0),                   // MAX LEFT MOVEMENT
+    //         new Vector2(6560, 0),                // MAX RIGHT MOVEMENT
+    //     )
+    // );
 
     cameraManager.add(camera);
 }
@@ -246,7 +259,7 @@ function initializeSprites() {
     initializeHUDJackieHead();
     initializeHUDDucklingsBox();
     initializeHUDDucklings();
-    initializeOnScreenText();
+    initializeHUDTimer();
     initializeJoesLives();
     initializeJackieLives();
 
@@ -383,7 +396,7 @@ function initializeMovingPlatforms() {
             new Vector2(1, 0),
             710,
             0,
-            GameData.H_MOVING_PLATFORM_DATA
+            GameData.H_MOVING_PLATFORM_VELOCITY
         )
     );
 
@@ -688,10 +701,17 @@ function initializePlayer1() {
         new Vector2(
             0.4,
             0.4
-        ),                                           // Scale
-        Vector2.Zero,                                 // Origin
+        ),                                             // Scale
+
+        // Origin - 
+        // ISSUE: BULLET CAUSING PROBEMS WHEN I TRY TO SHOOT IT FROM CENTER OF PLAYER
+        new Vector2(
+            GameData.BULLET_WIDTH / 2,
+            GameData.BULLET_HEIGHT / 2
+        ),     
+
         artist.getBoundingBoxByTakeName("Default"),    // Dimensions
-        0                                            // Explode
+        0                                              // Explode
     );
 
     let bulletSprite = new Sprite(
@@ -710,7 +730,7 @@ function initializePlayer1() {
         new BulletMoveController(
             notificationCenter,
             objectManager,
-            Vector2.Right,
+            Vector2.Right, // UNSURE HOW TO SHOOT RIGHT/LEFT DEPENDING ON WHICH DIRECTION THE PLAYER IS FACING
             GameData.BULLET_SPEED
         )
     );
@@ -725,7 +745,7 @@ function initializePlayer1() {
     );
 
     // Set animation
-    artist.setTake("Facing Right");
+    artist.setTake("Moving Right");
 
     transform = new Transform2D(
         GameData.JOE_START_POSITION,                            // Translation
@@ -735,7 +755,7 @@ function initializePlayer1() {
             0.5
         ),                                                      // Scale
         Vector2.Zero,                                           // Origin
-        artist.getBoundingBoxByTakeName("Facing Right"),                // Dimensions
+        artist.getBoundingBoxByTakeName("Moving Right"),                // Dimensions
         0                                                       // Explode By
     );
 
@@ -772,6 +792,7 @@ function initializePlayer1() {
             objectManager,
             keyboardManager,
             bulletSprite,
+            GameData.JOE_SHOOT_KEY,
             GameData.FIRE_INTERVAL
         )
     );
@@ -784,8 +805,51 @@ function initializePlayer2() {
 
     let transform;
     let artist;
-    let sprite;
 
+    /*************************************** BULLET ***************************************/
+
+    artist = new AnimatedSpriteArtist(
+        context,                                    // Context
+        1,                                          // Alpha
+        GameData.BULLET_ANIMATION_DATA              // Animation data
+    );
+
+    artist.setTake("Default");
+
+    transform = new Transform2D(
+        Vector2.Zero,                               // Translation
+        0,                                          // Rotation
+        new Vector2(
+            0.4,
+            0.4
+        ),                                              // Scale
+        Vector2.One,                                    // Origin
+        artist.getBoundingBoxByTakeName("Default"),     // Dimensions
+        0                                               // Explode
+    );
+
+    let bulletSprite = new Sprite(
+        "Bullet",                               // Unique ID
+        transform,                              // Transform (Set up above)
+        ActorType.Projectile,                   // Projectile
+        CollisionType.Collidable,               // CollisionType
+        StatusType.Off,                         // Set this to off initially (we will change this later)
+        artist,                                 // Artist (Set up above)
+        1,
+        1
+    );
+
+    // Attach bullet controller to the bullet sprite
+    bulletSprite.attachController(
+        new BulletMoveController(
+            notificationCenter,
+            objectManager,
+            Vector2.Right,
+            GameData.BULLET_SPEED
+        )
+    );
+
+    /*************************************** PLAYER 2 ***************************************/
 
     artist = new AnimatedSpriteArtist(
         context,                                                // Context
@@ -794,7 +858,7 @@ function initializePlayer2() {
     );
 
     // Set animation
-    artist.setTake("Idle");
+    artist.setTake("Moving Right");
 
     transform = new Transform2D(
         GameData.JACKIE_START_POSITION,                            // Translation
@@ -804,11 +868,11 @@ function initializePlayer2() {
             0.5
         ),                                                      // Scale
         Vector2.Zero,                                           // Origin
-        artist.getBoundingBoxByTakeName("Idle"),                // Dimensions
+        artist.getBoundingBoxByTakeName("Moving Right"),        // Dimensions
         0                                                       // Explode By
     );
 
-    sprite = new MoveableSprite(
+    let player2Sprite = new MoveableSprite(
         "Jackie",                                               // ID
         transform,                                              // Transform
         ActorType.Player,                                       // ActorType
@@ -819,12 +883,12 @@ function initializePlayer2() {
         1                                                       // LayerDepth
     );
 
-    sprite.body.maximumSpeed = 6;
-    sprite.body.friction = FrictionType.Low;
-    sprite.body.gravity = GravityType.Weak;
+    player2Sprite.body.maximumSpeed = 6;
+    player2Sprite.body.friction = FrictionType.Low;
+    player2Sprite.body.gravity = GravityType.Weak;
 
     
-    sprite.attachController(
+    player2Sprite.attachController(
         new PlayerMoveController(
             notificationCenter,
             keyboardManager,
@@ -835,8 +899,19 @@ function initializePlayer2() {
         )
     );
 
+    player2Sprite.attachController(
+        new PlayerShootController(
+            notificationCenter,
+            objectManager,
+            keyboardManager,
+            bulletSprite,
+            GameData.JACKIE_SHOOT_KEY,
+            GameData.FIRE_INTERVAL
+        )
+    );
+
     // Add sprite to object manager
-    objectManager.add(sprite);
+    objectManager.add(player2Sprite);
 
 }
 
@@ -845,33 +920,79 @@ function initializeHunters() {
     let transform;
     let artist;
 
+      /*************************************** BULLET ***************************************/
+
+      artist = new AnimatedSpriteArtist(
+        context,                                    // Context
+        1,                                          // Alpha
+        GameData.BULLET_ANIMATION_DATA              // Animation data
+    );
+
+    artist.setTake("Default");
+
+    transform = new Transform2D(
+        Vector2.Zero,                               // Translation
+        0,                                          // Rotation
+        new Vector2(
+            0.4,
+            0.4
+        ),                                              // Scale
+        new Vector2(
+            GameData.HUNTER1_WIDTH/2,
+            GameData.HUNTER1_WIDTH/2
+        ),                                               // Origin
+        artist.getBoundingBoxByTakeName("Default"),     // Dimensions
+        0                                               // Explode
+    );
+
+    let bulletSprite = new Sprite(
+        "Bullet",                               // Unique ID
+        transform,                              // Transform (Set up above)
+        ActorType.Projectile,                   // Projectile
+        CollisionType.Collidable,               // CollisionType
+        StatusType.Off,                         // Set this to off initially (we will change this later)
+        artist,                                 // Artist (Set up above)
+        1,
+        1
+    );
+
+    // Attach bullet controller to the bullet sprite
+    bulletSprite.attachController(
+        new BulletMoveController(
+            notificationCenter,
+            objectManager,
+            Vector2.Left,                   // AGAIN, MUST FIRE IN DIRECTION THAT ENEMY IS FACING
+            GameData.BULLET_SPEED
+        )
+    );
+
     /************************** HUNTER ONE *************************/
 
     artist = new AnimatedSpriteArtist(
         context,                                                // Context
         1,                                                      // Alpha
-        GameData.HUNTER_ANIMATION_DATA                             // Animation Data
+        GameData.HUNTER_ANIMATION_DATA                          // Animation Data
     );
 
     // Set animation
-    artist.setTake("HunterAnim1Left");
+    artist.setTake("Moving Right");
 
     transform = new Transform2D(
-        GameData.HUNTER_START_POSITION,                            // Translation
+        GameData.HUNTER_START_POSITION,                         // Translation
         0,                                                      // Rotation
         new Vector2(
             0.6,
             0.6
         ),                                                      // Scale
         Vector2.Zero,                                           // Origin
-        artist.getBoundingBoxByTakeName("HunterAnim1Left"),                // Dimensions
+        artist.getBoundingBoxByTakeName("Moving Right"),         // Dimensions
         0                                                       // Explode By
     );
 
     let hunter1 = new MoveableSprite(
-        "Enemy",                                               // ID
+        "Enemy",                                                // ID
         transform,                                              // Transform
-        ActorType.Enemy,                                       // ActorType
+        ActorType.Enemy,                                        // ActorType
         CollisionType.Collidable,                               // CollisionType
         StatusType.Updated | StatusType.Drawn,                  // StatusType
         artist,                                                 // Artist
@@ -896,6 +1017,17 @@ function initializeHunters() {
         )
     );
 
+    // DOESN'T WORK. ENEMY SPRITE DISSAPEARS WHEN CONTROLLER ATTACHED
+
+    // hunter1.attachController(
+    //     new EnemyShootController(
+    //         notificationCenter,
+    //         objectManager,
+    //         bulletSprite,
+    //         GameData.ENEMY_FIRE_INTERVAL
+    //     )
+    // );
+
     // Add enemy to object manager
     objectManager.add(hunter1);
 
@@ -905,28 +1037,28 @@ function initializeHunters() {
      artist = new AnimatedSpriteArtist(
         context,                                                // Context
         1,                                                      // Alpha
-        GameData.HUNTER2_ANIMATION_DATA                          // Animation Data
+        GameData.HUNTER2_ANIMATION_DATA                         // Animation Data
     );
 
     // Set animation
-    artist.setTake("HunterAnim1Left");
+    artist.setTake("Moving Right");
 
     transform = new Transform2D(
-        GameData.HUNTER2_START_POSITION,                            // Translation
+        GameData.HUNTER2_START_POSITION,                        // Translation
         0,                                                      // Rotation
         new Vector2(
             0.6,
             0.6
         ),                                                      // Scale
         Vector2.Zero,                                           // Origin
-        artist.getBoundingBoxByTakeName("HunterAnim1Left"),                // Dimensions
+        artist.getBoundingBoxByTakeName("Moving Right"),         // Dimensions
         0                                                       // Explode By
     );
 
     let hunter2 = new MoveableSprite(
         "Enemy2",                                               // ID
         transform,                                              // Transform
-        ActorType.Enemy,                                       // ActorType
+        ActorType.Enemy,                                        // ActorType
         CollisionType.Collidable,                               // CollisionType
         StatusType.Updated | StatusType.Drawn,                  // StatusType
         artist,                                                 // Artist
@@ -960,28 +1092,28 @@ function initializeHunters() {
      artist = new AnimatedSpriteArtist(
         context,                                                // Context
         1,                                                      // Alpha
-        GameData.HUNTER3_ANIMATION_DATA                          // Animation Data
+        GameData.HUNTER3_ANIMATION_DATA                         // Animation Data
     );
 
     // Set animation
-    artist.setTake("HunterAnim1Left");
+    artist.setTake("Moving Left");
 
     transform = new Transform2D(
-        GameData.HUNTER3_START_POSITION,                            // Translation
+        GameData.HUNTER3_START_POSITION,                        // Translation
         0,                                                      // Rotation
         new Vector2(
             0.6,
             0.6
         ),                                                      // Scale
         Vector2.Zero,                                           // Origin
-        artist.getBoundingBoxByTakeName("HunterAnim1Left"),                // Dimensions
+        artist.getBoundingBoxByTakeName("Moving Left"),         // Dimensions
         0                                                       // Explode By
     );
 
     let hunter3 = new MoveableSprite(
         "Enemy3",                                               // ID
         transform,                                              // Transform
-        ActorType.Enemy,                                       // ActorType
+        ActorType.Enemy,                                        // ActorType
         CollisionType.Collidable,                               // CollisionType
         StatusType.Updated | StatusType.Drawn,                  // StatusType
         artist,                                                 // Artist
@@ -1201,24 +1333,21 @@ function initializeHUDDucklings() {
         );
 
         // Set sprite take
-        spriteClone.artist.setTake("DucklingAnim1");
+        spriteClone.artist.setTake("DucklingHUDAnim");
 
         // Add to object manager
         objectManager.add(spriteClone);
     }
 }
 
-function initializeOnScreenText() {
+function initializeHUDTimer() {
 
     let transform;
     let artist;
     let sprite;
 
     transform = new Transform2D(
-        new Vector2(
-            (canvas.clientWidth / 2 - 40), 
-            10
-        ),
+        new Vector2(810, 110),
         0,
         Vector2.One,
         Vector2.Zero,
@@ -1229,7 +1358,7 @@ function initializeOnScreenText() {
     artist = new TextSpriteArtist(
         context,                        // Context
         1,                              // Alpha
-        "Go, Joe, go!",                  // Text
+        "Time: ",                       // Text
         FontType.InformationMedium,     // Font Type
         Color.Black,                    // Color
         TextAlignType.Left,             // Text Align
@@ -1238,7 +1367,7 @@ function initializeOnScreenText() {
     );
 
     sprite = new Sprite(
-        "Text UI Info",
+        "Timer Text",
         transform,
         ActorType.HUD,
         CollisionType.NotCollidable,
@@ -1387,7 +1516,8 @@ function initializeOtherDecorations()
 
 
     /************************ HOUSE ***********************/
-
+    // GOAL: When collided with, will play win sound and
+    // then a delay before the win screen pops up 
 
     artist = new AnimatedSpriteArtist(
         context,                                        // Context
@@ -1409,7 +1539,7 @@ function initializeOtherDecorations()
     let houseSprite = new Sprite(
         "House",                                        // ID
         transform,
-        ActorType.Environment,
+        ActorType.Decorator,
         CollisionType.Collidable,
         StatusType.Updated | StatusType.Drawn,
         artist,
@@ -1420,7 +1550,7 @@ function initializeOtherDecorations()
     objectManager.add(houseSprite);
 
 
-/************************** SIGN ****************************/
+    /************************** SIGN ****************************/ 
 
     artist = new SpriteArtist(
         context,
@@ -1453,6 +1583,8 @@ function initializeOtherDecorations()
 
 
     /****************** SPIKE TRAPS *******************/
+    // GOAL: When player lands on surface of image,
+    // the player will lose a life
 
     artist = new SpriteArtist(
         context,

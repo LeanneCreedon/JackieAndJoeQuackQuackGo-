@@ -160,13 +160,18 @@ class MyGameStateManager extends GameStateManager {
                 )
             );
 
-            // this.notificationCenter.notify(
-            //     new Notification(
-            //         NotificationType.GameState,
-            //         NotificationAction.Lose,
-            //         []
-            //     )
-            // );
+            // DOESN'T WORK!
+
+            setTimeout(function(){
+
+                this.notificationCenter.notify(
+                    new Notification(
+                        NotificationType.GameState,
+                        NotificationAction.ShowMenuChanged,
+                        ["lose_menu"]
+                    )
+                );
+            }, 5000);
         }
 
         // Play a sound?
