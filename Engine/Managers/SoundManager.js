@@ -249,6 +249,13 @@ class SoundManager {
                     // Play the audio object
                     audioObject.play();
                 }
+                else if((audioCue.name === "background_music") && (!audioObject.paused))
+                {
+                    audioObject.pause();    
+                }
+                // I know that the above code is not very well written, but I had to come up with
+                // a quick fix for the problem I was having where I could'nt pause the music 
+                // when the user pressed the audio button again.
             }
         }
 
@@ -275,7 +282,7 @@ class SoundManager {
             if (!audioObject.paused) {
 
                 // Pause the audio object
-                cue.pause();
+                audioObject.pause();
             }
         }
     }
@@ -287,17 +294,27 @@ class SoundManager {
      */
     setVolume(name, volume) {
 
-        // Get the audio cue
-        let audioCue = this.cueArray[index];
+        // I had to slightly adjust this code because it didn't work
+        // the way it was before. But it works now.
+
+        // Find index
+        let index = this.findIndex(name);
 
         // Get the audio object
-        let audioObject = getAudioObject(name);
+        if (index != -1) {
 
-        // If an audio object is present
-        if (audioObject) {
+            // Get the audio cue
+            let audioCue = this.cueArray[index];
 
-            // Set audio object volume
-            audioObject.volume = audioCue.volume = volume;
+            // Get the audio object
+            let audioObject = audioCue.audioObject;
+
+            // If an audio object is present
+            if (audioObject) {
+
+                // Set audio object volume
+                audioObject.volume = audioCue.volume = volume;
+            }
         }
     }
 

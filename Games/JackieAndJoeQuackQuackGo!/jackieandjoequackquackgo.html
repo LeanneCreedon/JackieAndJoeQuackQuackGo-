@@ -38,37 +38,32 @@
                     <h1>Thanks for playing!</h1>
                 </div>
 
-                <!-- Level Complete Menu -->
-                 <div id="win_menu" class="menu hidden">
-                    <ul>
-                        <li><a href="javascript:void(0)" id="PlayAgainButton" class="button play again"></a></li>
-                        <li><a href="javascript:void(0)" id="MainMenuButton" class="button main menu"></a></li>
-                    </ul>
-                </div>
-
                 <!-- Game Over Menu -->
                 <div id="lose_menu" class="menu hidden">
-                    <ul>
-                        <li><a href="javascript:void(0)" id="TryAgainButton" class="button try again"></a></li>
-                        <li><a href="javascript:void(0)" id="MainMenuButton" class="button main menu"></a></li>
-                    </ul>
+                    <h3>Hard luck, try again soon</h3>
+                    <h3>Hope you enjoyed my game!</h3>
                 </div>
-    
-                <!-- 
-                    Check out the initialize function of MyMenuManager to see how menu's are
-                    hidden when the game starts.
-                -->
+
+                <!-- Level Complete Menu -->
+                 <div id="win_menu" class="menu hidden">
+                    <h3>Congratulations, you won!</h3>
+                    <h3>Hope you enjoyed my game!</h3>
+                </div>
+
             </div>
 
             <!-- Create Canvas -->
             <canvas id="main_canvas" width="980" height="600"></canvas>
     </div>
 
+    <!-- Add timer -->
+    <div id="timer"></div>
+
     <!-- Load Sprite Assets -->
     <img id="background_sprite" class="sprite" src="assets/images/Backgound-Sprite.png">
     <img id="main_menu" class="sprite" src="assets/images/MainMenu.png">
-    <img id="game_over_menu" class="sprite" src="assets/images/GameOverScreen.png">
-    <img id="level_complete_menu" class="sprite" src="assets/images/LevelCompleteScreen.png">
+    <img id="lose_menu" class="sprite" src="assets/images/GameOverScreen.png">
+    <img id="win_menu" class="sprite" src="assets/images/LevelCompleteScreen.png">
 
     <img id="joe_sprite_sheet" class="sprite" src="assets/images/Joe_SpriteSheet.png">
     <img id="jackie_sprite_sheet" class="sprite" src="assets/images/Jackie_SpriteSheet.png">
@@ -91,10 +86,11 @@
     <audio preload="auto" id="sound_gun" src="assets/sound/effects/Shotgun.wav"></audio>
     <audio preload="auto" id="sound_lose" src="assets/sound/effects/YouLose.wav"></audio>
     <audio preload="auto" id="sound_win" src="assets/sound/effects/YouWin.wav"></audio>
+    <audio preload="auto" id="sound_spike" src="assets/sound/effects/SpikeTrap.wav"></audio>
     
     <!-- Music assets -->
-    <audio id="background_music" src="assets/sound/music/BackgroundMusic.wav"></audio>
-    <audio control loop autoplay id="menu_music" src="assets/sound/music/MenuMusic.mp3" loop="loop"></audio>
+    <audio autoplay id="background_music" src="assets/sound/music/BackgroundMusic.wav"  loop="loop"></audio>
+    <audio autoplay id="menu_music" src="assets/sound/music/MenuMusic.mp3" loop="loop"></audio>
 
     <!-- Load Engine Scripts -->
     <script src="../../Engine/Constants/Constants.js"></script>

@@ -1,10 +1,14 @@
+/* NOTICE: In order to the Vanilla font, you would have to download it on your PC,
+   otherwise it won't show up as I intended. It's the same as the font used
+   on the menu image */
+
 body {
     cursor: default;
     user-select: none;
     font-family: Vanilla;
     font-size: 16px;
 
-    background-color: #218f003b;;
+    background-color: #218f003b;
 }
 
 #title {
@@ -25,6 +29,16 @@ body {
     background-color: black;
     border: 3px solid #218f00;
     border-radius: 2px;
+}
+
+#timer {
+    position: absolute;
+    
+    flex-direction: column;
+    justify-content: center;
+    
+    right:520px;
+    top: 200px;
 }
 
 #menu_block {
@@ -67,10 +81,12 @@ body {
 
 #lose_menu {
     background-image: url('../assets/images/GameOverScreen.png');
+    background-color: black;
 }
 
 #win_menu {
     background-image: url('../assets/images/LevelCompleteScreen.png');
+    background-color: black;
 }
 
 ul {
@@ -139,65 +155,6 @@ a {
 
 #AudioButton:hover {
     background-image: url('../assets/images/ToggleAudioButtonHover.png');
-}
-
-#AudioButton:focus {
-    background-image: url('../assets/images/ToggleAudioButton.png');
-}
-
-/* LOSE MENU BUTTONS */
-
-#TryAgainButton {
-    
-    display: block;
-    margin-left: 335px;
-    margin-top: -30px;
-    width: 335;
-    height: 108;
-    border-radius: 11px;
-    background-image: url('../assets/images/TryAgainButton.png');
-    
-}
-
-#MainMenuButton {
- 
-    display: block;
-    margin-left:415px;
-    margin-top: 355px;
-    width: 174;
-    height: 74;
- 
-    border-radius: 11px;
-    
-    background-image: url('../assets/images/MainMenuButtonV1.png');
-}
-
-#TryAgainButton:hover {
-    
-    background-image: url('../assets/images/TryAgainButtonHover.png');
-}
-
-#MainMenuButton:hover {
-    background-image: url('../assets/images/MainMenuButtonV2.png');
-}
-
-/* WIN MENU BUTTONS */
-
-#PlayAgainButton {
-    
-    display: block;
-    margin-left: 335px;
-    margin-top: -35px;
-    width: 335;
-    height: 108;
-    border-radius: 11px;
-    background-image: url('../assets/images/PlayAgainButtonV1.png');
-    
-}
-
-#PlayAgainButton:hover {
-    
-    background-image: url('../assets/images/PlayAgainButtonV2.png');
 }
 
 .sprite {

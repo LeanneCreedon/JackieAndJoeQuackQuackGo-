@@ -63,13 +63,16 @@ const NotificationAction = {
 
     Play: "Play",
     Pause: "Pause",
-    ShowMenuChanged: "ShowMenuChanged",
+    ShowMainMenu: "ShowMainMenu",
+    ShowLoseMenu: "ShowLoseMenu",
+    ShowWinMenu: "ShowWinMenu",
     SetVolume: "SetVolume",
     SetVolumeByTheme: "SetVolumeByTheme",
     SetVolumeAll: "SetVolumeAll",
     ResetVolumeAll: "ResetVolumeAll",
 
     Health: "Health",
+    PlayerDeath: "PlayerDeath",
     
     // Add more here as required
 };

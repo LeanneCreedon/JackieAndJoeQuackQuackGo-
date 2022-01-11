@@ -10,16 +10,19 @@ const ActorType = {
 
     Background: 0,
     Ground: 1,
-    Environment: 2,
-    Decorator: 3,
-    Pickup: 4,
-    Interactable: 5,
-    Projectile: 6,
-    Enemy: 7,
-    NPC: 8,
-    Player: 9,
-    Camera: 10,
-    HUD: 11
+    Cliff: 2,
+    Environment: 3,
+    Decorator: 4,
+    Pickup: 5,
+    Interactable: 6,
+    Projectile: 7,
+    Enemy: 8,
+    SpikeTrap: 9,
+    NPC: 10,
+    Player: 11,
+    Foreground: 12,
+    Camera: 13,
+    HUD: 14
 
     // Add as many actor types as your game needs here BUT remember that the 
     // assigned number will determine drawn sort order...

@@ -121,7 +121,15 @@ class ObjectManager {
 
         switch (notification.notificationAction) {
 
-            case NotificationAction.ShowMenuChanged:
+            case NotificationAction.ShowMainMenu:
+
+                this.statusType = notification.notificationArguments[0];
+                break;
+            case NotificationAction.ShowLoseMenu:
+
+                this.statusType = notification.notificationArguments[0];
+                break;
+            case NotificationAction.ShowWinMenu:
 
                 this.statusType = notification.notificationArguments[0];
                 break;

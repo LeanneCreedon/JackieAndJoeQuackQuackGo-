@@ -33,7 +33,7 @@ function start() {
     notificationCenter.notify(
         new Notification(
             NotificationType.Menu,
-            NotificationAction.ShowMenuChanged,
+            NotificationAction.ShowMainMenu,
             [StatusType.Off]
         )
     );
@@ -187,6 +187,10 @@ function initializeDebugDrawer() {
 
 function initializeCameras() {
 
+    /* Doesn't work as well as I wanted, I tried to have the camera reset centre on the player
+       But I wasn't sure how to do it. So if it's awkward, just change the controlls back
+       to the numpad buttons. */
+
     let transform = new Transform2D(
         Vector2.Zero,
         0,
@@ -208,37 +212,15 @@ function initializeCameras() {
         StatusType.Updated
     );
 
-    // You should extract the below variables used to construct the flight
-    // camera controller class into a seperate constants file. There should
-    // be very few magic variables/numbers in your code!
-
-    // See more: 
-    // https://stackoverflow.com/questions/47882/what-is-a-magic-number-and-why-is-it-bad
-
     camera.attachController(
         new FlightCameraController(
             keyboardManager,
             [
-                Keys.Numpad4, Keys.Numpad6, Keys.Numpad5
+                Keys.A, Keys.D, Keys.Numpad5
             ],
-            new Vector2(8, 0),
-            new Vector2(0.005, 0.005)
+            new Vector2(4, 0),
         )
     );
-
-    // DOESN'T WORK!
-    // camera.attachController(
-    //     new FlightCameraController(
-    //         keyboardManager,
-    //         [
-    //             Keys.Numpad4, Keys.Numpad6, Keys.Numpad5
-    //         ],
-    //         new Vector2(8, 0),
-    //         new Vector2(0.005, 0.005),
-    //         new Vector2(0, 0),                   // MAX LEFT MOVEMENT
-    //         new Vector2(6560, 0),                // MAX RIGHT MOVEMENT
-    //     )
-    // );
 
     cameraManager.add(camera);
 }
@@ -246,7 +228,9 @@ function initializeCameras() {
 function initializeSprites() {
 
     initializeBackground();
-    EmptyCollsionBox();
+    EmptyCollsionBoxWall();
+    EmptyCollsionBoxCliff();
+
     initializePlayer1();
     initializePlayer2();
     initializePlatforms();
@@ -469,7 +453,7 @@ function initializeMovingPlatforms() {
     }
 }
 
-function EmptyCollsionBox()
+function EmptyCollsionBoxWall()
 {
     let artist;
     let transform;
@@ -511,6 +495,54 @@ function EmptyCollsionBox()
 
         // Update translation
         collisionBoxSpriteClone.transform.setTranslation(GameData.WALL_COLLISION_BOX_DATA.translationArray[i]);
+
+        // Add to object manager
+        objectManager.add(collisionBoxSpriteClone);
+    }
+}
+
+function EmptyCollsionBoxCliff()
+{
+    let artist;
+    let transform;
+
+    artist = new SpriteArtist(
+        context,
+        1,
+        GameData.CLIFF_COLLISION_BOX_DATA.spriteSheet,
+        GameData.CLIFF_COLLISION_BOX_DATA.sourcePosition,
+        GameData.CLIFF_COLLISION_BOX_DATA.sourceDimensions
+    );
+
+    transform = new Transform2D(
+        Vector2.Zero,
+        GameData.CLIFF_COLLISION_BOX_DATA.rotation,
+        GameData.CLIFF_COLLISION_BOX_DATA.scale,
+        GameData.CLIFF_COLLISION_BOX_DATA.origin,
+        GameData.CLIFF_COLLISION_BOX_DATA.sourceDimensions,
+    );
+
+    let collisionBoxSprite = new MoveableSprite(
+        GameData.CLIFF_COLLISION_BOX_DATA.id,
+        transform,
+        GameData.CLIFF_COLLISION_BOX_DATA.actorType,
+        GameData.CLIFF_COLLISION_BOX_DATA.collisionType,
+        StatusType.Updated | StatusType.Drawn,
+        artist,
+        GameData.CLIFF_COLLISION_BOX_DATA.scrollSpeedMultiplier,
+        GameData.CLIFF_COLLISION_BOX_DATA.layerDepth
+    );
+
+    for (let i = 0; i < GameData.CLIFF_COLLISION_BOX_DATA.translationArray.length; i++) {
+
+        // Clone sprite
+        collisionBoxSpriteClone = collisionBoxSprite.clone();
+
+        // Update id
+        collisionBoxSpriteClone.id = collisionBoxSpriteClone.id + " " + i;
+
+        // Update translation
+        collisionBoxSpriteClone.transform.setTranslation(GameData.CLIFF_COLLISION_BOX_DATA.translationArray[i]);
 
         // Add to object manager
         objectManager.add(collisionBoxSpriteClone);
@@ -760,7 +792,7 @@ function initializePlayer1() {
     );
 
     let playerSprite = new MoveableSprite(
-        "Joe",                                               // ID
+        "Joe",                                                  // ID
         transform,                                              // Transform
         ActorType.Player,                                       // ActorType
         CollisionType.Collidable,                               // CollisionType
@@ -1340,14 +1372,53 @@ function initializeHUDDucklings() {
     }
 }
 
+
+/**************************** TIMER ***************************/
+// Help from this site : https://navaneeth.me/simple-countdown-timer-using-javascript/#.YddOpGjP2Ul
+
+var timeoutHandle;
+var timesUp = false;
+var countDownTimer = 1;
+
+function countdown(minutes) 
+{
+    var seconds = 60;
+    var mins = minutes
+    
+    function tick() 
+    {
+        var counter = document.getElementById("timer");
+        var current_minutes = mins-1
+        seconds--;
+        counter.innerHTML =
+        current_minutes.toString() + ":" + (seconds < 10 ? "0" : "") + String(seconds);
+
+        if( seconds > 0 ) 
+        {
+            timeoutHandle=setTimeout(tick, 1000);
+        } 
+        else 
+        {
+            if(mins > 1)
+            {
+                // countdown(mins-1);   never reach “00″ issue solved:Contributed by Victor Streithorst
+                setTimeout(function () { countdown(mins - 1); }, 1000);
+            }
+        }
+    }
+    tick();
+}
+
 function initializeHUDTimer() {
 
     let transform;
     let artist;
     let sprite;
 
+    /**************************** 'TIMER' TEXT ***************************/
+
     transform = new Transform2D(
-        new Vector2(810, 110),
+        new Vector2(818, 110),
         0,
         Vector2.One,
         Vector2.Zero,
@@ -1362,7 +1433,7 @@ function initializeHUDTimer() {
         FontType.InformationMedium,     // Font Type
         Color.Black,                    // Color
         TextAlignType.Left,             // Text Align
-        200,                            // Max Width
+        300,                            // Max Width
         true                            // Fixed Position
     );
 
@@ -1583,8 +1654,7 @@ function initializeOtherDecorations()
 
 
     /****************** SPIKE TRAPS *******************/
-    // GOAL: When player lands on surface of image,
-    // the player will lose a life
+
 
     artist = new SpriteArtist(
         context,
@@ -1627,13 +1697,14 @@ function initializeOtherDecorations()
         // Add to object manager
         objectManager.add(spikeTrapSpriteClone);
     }
+
 }
 
 
 function resetGame() {
     
     clearCanvas();
-    startGame();
+    start();
 }
 
 window.addEventListener("load", start);

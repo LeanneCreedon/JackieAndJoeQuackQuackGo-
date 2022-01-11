@@ -12,6 +12,9 @@ class MyGameStateManager extends GameStateManager {
     get inventory() {
         return this._inventory;
     }
+    get player() {
+        return this._player;
+    }
 
     set playerHealth(value) {
         this._playerHealth = value;
@@ -25,6 +28,7 @@ class MyGameStateManager extends GameStateManager {
         super(id);
 
         this.notificationCenter = notificationCenter;
+        this.objectManager = objectManager;
         this.joeHealth = initialPlayerHealth;
         this.jackieHealth = initialPlayerHealth;
 
@@ -54,7 +58,9 @@ class MyGameStateManager extends GameStateManager {
                 this.handleInventoryStateChange(notification.notificationArguments);
                 break;
 
-            // Add more cases here...
+            case NotificationAction.PlayerDeath:
+                this.playerDeath(notification.notificationArguments);
+                break;
 
             default:
                 break;
@@ -62,12 +68,12 @@ class MyGameStateManager extends GameStateManager {
     }
 
     handleHealthStateChange(argArray) {
-
+        
         // Arg array is the array we passed through the notification
         // i.e., ["Jackie", 1]
 
         // Extract these two values into two usable variables
-
+        
         const playerID = argArray[0];
         const healthDelta = argArray[1];
 
@@ -76,12 +82,6 @@ class MyGameStateManager extends GameStateManager {
 
             // Update jackies health
             this.jackieHealth += healthDelta;
-
-            // Create a UI notification that will update the JackieLives
-            // text sprite
-
-            // Check out the updateHealth method of the UI manager to see how this notification
-            // is handled
 
             notificationCenter.notify(
                 new Notification(
@@ -140,47 +140,102 @@ class MyGameStateManager extends GameStateManager {
         // functions in your GameState manager and UI manager
     }
 
-    update(gameTime) {
+    playerDeath(argArray) {
 
-        // Add your code here...
+        const playerID = argArray[0];
 
-        // For example, every update(), we could check the player's health. If
-        // the player's health is <= 0, then we can create a notification...
-        // eg.
+        const players = this.objectManager.get(ActorType.Player);
+        
+        // If house is null, exit the function
+        if (players == null) return;
 
-        if(this.joeHealth <=0 && this.jackieHealth <=0)
-        {
-            
-            // PLAY SOUND
-            this.notificationCenter.notify(
-                new Notification(
-                    NotificationType.Sound,
-                    NotificationAction.Play,
-                    ["sound_lose"]
-                )
-            );
+        for (let i = 0; i < players.length; i++) {
 
-            // DOESN'T WORK!
+            // Store a reference to the current enemy sprite
+            const player = players[i];
 
-            setTimeout(function(){
+            // If the player id is Jackie
+            if (playerID == "Jackie") {
 
-                this.notificationCenter.notify(
+                // JACKIE DIES!
+                notificationCenter.notify(
                     new Notification(
                         NotificationType.GameState,
-                        NotificationAction.ShowMenuChanged,
-                        ["lose_menu"]
+                        NotificationAction.Health,
+                        [playerID, -this.jackieHealth]
                     )
                 );
-            }, 5000);
+
+                // REMOVE SPRITE
+                if(playerID == player.id)
+                {
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.Sprite,
+                            NotificationAction.Remove,
+                            [player]
+                        )
+                    );
+                }
+                
+            }
+
+            // If the player ID is Joe
+            if (playerID == "Joe") {
+
+                // JOE DIES!
+                notificationCenter.notify(
+                    new Notification(
+                        NotificationType.GameState,
+                        NotificationAction.Health,
+                        [playerID, -this.joeHealth]
+                    )
+                );
+
+                // REMOVE SPRITE
+                if(playerID == player.id)
+                {
+                    notificationCenter.notify(
+                        new Notification(
+                            NotificationType.Sprite,
+                            NotificationAction.Remove,
+                            [player]
+                        )
+                    );
+                }
+            }
+        }
+    }
+
+    playSoundOnce = true;
+
+    update(gameTime) {
+
+        if(this.joeHealth <=0 && this.jackieHealth <=0 || timesUp)
+        {
+            if(this.playSoundOnce)
+            {
+                // PLAY SOUND
+                this.notificationCenter.notify(
+                    new Notification(
+                        NotificationType.Sound,
+                        NotificationAction.Play,
+                        ["sound_lose"]
+                    )
+                );
+                this.playSoundOnce=false;
+            }
+        
+            setTimeout(function() {
+                notificationCenter.notify(
+                    new Notification(
+                        NotificationType.Menu,
+                        NotificationAction.ShowLoseMenu,
+                        [StatusType.Off]
+                    )
+                ); 
+            }, 2000);
         }
 
-        // Play a sound?
-        // Pause the game?
-        // Play the 'player death' animation?
-        // Remove the player sprite from the game?
-        // Show the win/lose screen?
-
-        // How could we have these events fire one after each other, rather
-        // than all at the same time? Hint: use timers.
     }
 }

@@ -1,33 +1,7 @@
 /*
- * Class to store all sprite data for jackie and joe quack quack go!
- 
-class SpriteData {
-
-
-    // Player1 Sprite position on Sprite Sheet
-    static PLAYER1_X = 1255;
-    static PLAYER1_Y = 534;
-    static PLAYER1_WIDTH = 245;
-    static PLAYER1_HEIGHT = 266;
-
-    static PLAYER2_X = 600;
-    static PLAYER2_Y = 900;
-    static PLAYER2_WIDTH = 245;
-    static PLAYER2_HEIGHT = 290;
-
-    static CANVAS_WIDTH = 980;
-    static CANVAS_HEIGHT = 600;
-    static CANVAS_MARGIN = 10;
- 
-
-}
-class GameData {
-    
-    // Speed variables
-    static PLAYER_SPEED = 0.2;
-   
-}
+ * Class to store all data for jackie and joe quack quack go!
 */
+
 class GameData {
     static AUDIO_CUE_ARRAY = [
       new AudioCue("background_music", AudioType.Background, 1, 1, 0, true),
@@ -37,8 +11,9 @@ class GameData {
       new AudioCue("sound_health", AudioType.Move, 1, 1, 0, false),
       new AudioCue("sound_jump", AudioType.Move, 1, 1, 0, false),
       new AudioCue("sound_gun", AudioType.All, 1, 1, 0, false),
-      new AudioCue("sound_lose", AudioType.Move, 1, 1, 0, false),
-      new AudioCue("sound_win", AudioType.WinLose, 1, 1, 0, false)
+      new AudioCue("sound_lose", AudioType.WinLose, 1, 1, 0, false),
+      new AudioCue("sound_win", AudioType.WinLose, 1, 1, 0, false),
+      new AudioCue("sound_spike", AudioType.Move, 1, 1, 0, false)
     ];
   
     static BACKGROUND_DIMENSIONS = new Vector2(980, 600);
@@ -83,6 +58,32 @@ class GameData {
         ]
     };
 
+    // COLLISION FOR CLIFF
+
+    static CLIFF_COLLISION_BOX_DIMENSIONS = new Vector2(240, 14);
+  
+    static CLIFF_COLLISION_BOX_DATA = {
+  
+        id: "Cliff Collision Box",
+        spriteSheet: document.getElementById("collision_box_sprite"),
+        sourcePosition: Vector2.Zero,
+        sourceDimensions: this.CLIFF_COLLISION_BOX_DIMENSIONS,
+        rotation: 0,
+        scale: Vector2.One,
+        origin: Vector2.Zero,
+        actorType: ActorType.Cliff,
+        collisionType: CollisionType.Collidable,
+        scrollSpeedMultiplier: 0.2,
+
+        translationArray: [
+          new Vector2(1040, 750),
+          new Vector2(2880, 750),
+          new Vector2(3120, 750),
+          new Vector2(3360, 750),
+          new Vector2(3600, 750),
+        ]
+    };
+
     static BOX_DIMENSIONS = new Vector2(265, 265);
   
     static BOX_DATA = {
@@ -119,7 +120,7 @@ class GameData {
       rotation: 0,
       scale: new Vector2(0.5, 0.5),
       origin: Vector2.Zero,
-      actorType: ActorType.Environment,
+      actorType: ActorType.SpikeTrap,
       collisionType: CollisionType.Collidable,
       layerDepth: 0,
 
@@ -430,36 +431,10 @@ class GameData {
           // This list of rects just represent the positions
           // and dimension of each individual animation frame
           // on the sprite sheet
-          new Rect(0, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),    // Animation frame 1
+          new Rect(0, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),      // Animation frame 0
           new Rect(391, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),    // Animation frame 1
-          new Rect(784, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),    // Animation frame 1
-          new Rect(1181, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),    // Animation frame 1
-        ]
-      },
-
-      // Animation 2
-      "HouseAnim2": {
-
-        frameRatePerSec: 2,
-
-        // -1 = Loop forever
-        //  0 = Run once (no loop)
-        //  N = Loop N times
-        maxLoopCount: -1,
-
-        startFrameIndex: 0,
-        endFrameIndex: 0,
-
-        // Notice that I chose the largest of all the widths taken from the frames
-        // array below
-        boundingBoxDimensions: new Vector2(385, 285),
-
-        frames: [
-
-          // This list of rects just represent the positions
-          // and dimension of each individual animation frame
-          // on the sprite sheet
-          new Rect(391, 65, 385, 285),    // Animation frame 2
+          new Rect(784, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),    // Animation frame 2
+          new Rect(1181, 11, this.HOUSE_WIDTH, this.HOUSE_HEIGHT),   // Animation frame 3
         ]
       },
     }
@@ -473,33 +448,22 @@ class GameData {
       id: "Heart Animation Data",
       spriteSheet: document.getElementById("pickups_sprite_sheet"),
 
-    // Animations
+      // Animations
       takes: {
   
         // Animation 1
         "Anim1": {
   
-          frameRatePerSec: 2,
-  
-          // -1 = Loop forever
-          //  0 = Run once (no loop)
-          //  N = Loop N times
+          frameRatePerSec: 3,
           maxLoopCount: -1,
-  
           startFrameIndex: 0,
           endFrameIndex: 1,
   
-          // Notice that I chose the largest of all the widths taken from the frames
-          // array below
           boundingBoxDimensions: new Vector2(315, 305),
   
           frames: [
-  
-            // This list of rects just represent the positions
-            // and dimension of each individual animation frame
-            // on the sprite sheet
-            new Rect(435, 304, this.HEART_WIDTH, this.HEART_HEIGHT),    // Animation frame 1
-            new Rect(435, 0, this.HEART_WIDTH, this.HEART_HEIGHT),    // Animation frame 2
+            new Rect(435, 304, this.HEART_WIDTH, this.HEART_HEIGHT),   // Animation frame 0
+            new Rect(435, 0, this.HEART_WIDTH, this.HEART_HEIGHT),     // Animation frame 1
           ]
         },
       }
@@ -567,26 +531,28 @@ class GameData {
 
         takes: {
 
-            "Default": {
-                frameRatePerSec: 2,
-                maxLoopCount: -1,
-                startFrameIndex: 0,
-                endFrameIndex: 0,
-                boundingBoxDimensions: new Vector2(this.BULLET_WIDTH, this.BULLET_HEIGHT),
-                frames: [
-                    new Rect(0, 0, this.BULLET_WIDTH, this.BULLET_HEIGHT)
-                ]
-            },
+          "Default": {
+              frameRatePerSec: 2,
+              maxLoopCount: -1,
+              startFrameIndex: 0,
+              endFrameIndex: 0,
+
+              boundingBoxDimensions: new Vector2(this.BULLET_WIDTH, this.BULLET_HEIGHT),
+
+              frames: [
+                new Rect(0, 0, this.BULLET_WIDTH, this.BULLET_HEIGHT)
+              ]
+          },
         }
     };
 
 
     // PLAYER
-    static JOE_START_POSITION = new Vector2(175, 422);      //START POS
-    static JOE_MOVE_KEYS = [Keys.A, Keys.D, Keys.Space];    // MOVE KEYS
-    static JOE_SHOOT_KEY = [Keys.S];                        // SHOOT KEY
-    static JOE_RUN_VELOCITY = 0.1;                          // SPEED
-    static JOE_JUMP_VELOCITY = 0.5;                         // JUMP SPEED
+    static JOE_START_POSITION = new Vector2(175, 422);              // START POS
+    static JOE_MOVE_KEYS = [Keys.A, Keys.D, Keys.Space, Keys.Q];    // MOVE KEYS
+    static JOE_SHOOT_KEY = [Keys.S];                                // SHOOT KEY
+    static JOE_RUN_VELOCITY = 0.1;                                  // SPEED
+    static JOE_JUMP_VELOCITY = 0.5;                                 // JUMP SPEED
 
     // DIMENSIONS
     static PLAYER1_WIDTH = 245;
@@ -651,11 +617,11 @@ class GameData {
           startFrameIndex: 0,
           endFrameIndex: 1,
   
-          boundingBoxDimensions: new Vector2(this.PLAYER1_WIDTH, this.PLAYER1_HEIGHT),
+          boundingBoxDimensions: new Vector2(255, 265),
   
           frames: [
-            new Rect(231, 0, 255, 265),    // Animation frame 0
-            new Rect(989, 0, 255, 265),    // Animation frame 1
+            new Rect(231, -1, 255, 266),    // Animation frame 0
+            new Rect(989, -1, 250, 266),    // Animation frame 1
           ]
         },
 
@@ -706,14 +672,46 @@ class GameData {
             new Rect(769, 0, 255, 291),     // Animation frame 1
           ]
         },
+
+        // Animation 7
+        "Right Quack": {
+  
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+  
+          boundingBoxDimensions: new Vector2(255, 265),
+  
+          frames: [
+            new Rect(993, 534, 255, 265),     // Animation frame 0
+            new Rect(1134, 265, 250, 265),    // Animation frame 1
+          ]
+        },
+
+        // Animation 8
+        "Left Quack": {
+  
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+  
+          boundingBoxDimensions: new Vector2(255, 265),
+  
+          frames: [
+            new Rect(257, 1335, 255, 265),     // Animation frame 0
+            new Rect(146, 1067, 250, 265),     // Animation frame 1
+          ]
+        },
       }
     };
 
-    static JACKIE_START_POSITION = new Vector2(30, 410);                          //START POS
-    static JACKIE_MOVE_KEYS = [Keys.ArrowLeft, Keys.ArrowRight, Keys.ArrowUp];    // MOVE KEYS
-    static JACKIE_SHOOT_KEY = [Keys.Numpad0];                                     // SHOOT KEY
-    static JACKIE_RUN_VELOCITY = 0.1;                                             // SPEED
-    static JACKIE_JUMP_VELOCITY = 0.5;                                            // JUMP SPEED
+    static JACKIE_START_POSITION = new Vector2(30, 410);                                        // START POS
+    static JACKIE_MOVE_KEYS = [Keys.ArrowLeft, Keys.ArrowRight, Keys.ArrowUp, Keys.Numpad1];    // MOVE KEYS
+    static JACKIE_SHOOT_KEY = [Keys.Numpad0];                                                   // SHOOT KEY
+    static JACKIE_RUN_VELOCITY = 0.1;                                                           // SPEED
+    static JACKIE_JUMP_VELOCITY = 0.5;                                                          // JUMP SPEED
 
     // PLAYER 2 DIMENSIONS
     static PLAYER2_WIDTH = 245;
@@ -749,8 +747,8 @@ class GameData {
             // This list of rects just represent the positions
             // and dimension of each individual animation frame
             // on the sprite sheet
-            new Rect(0, 609, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),    // Animation frame 2
-            new Rect(1285, 609, 216, this.PLAYER2_HEIGHT),    // Animation frame 2
+            new Rect(0, 609, this.PLAYER2_WIDTH, this.PLAYER2_HEIGHT),    // Animation frame 0
+            new Rect(1285, 609, 216, this.PLAYER2_HEIGHT),                // Animation frame 1
           ]
         },
 
@@ -786,7 +784,7 @@ class GameData {
           ]
         },
 
-        // Animation 3
+        // Animation 4
         "Shooting Left": {
           
           frameRatePerSec: 2,
@@ -798,11 +796,11 @@ class GameData {
 
           frames: [
             new Rect(481, 1510, 255, 291),    // Animation frame 0
-            new Rect(0, 1510, 255, 291),     // Animation frame 1
+            new Rect(0, 1510, 255, 291),      // Animation frame 1
           ]
         },
 
-        // Animation 3
+        // Animation 5
         "Jumping Left": {
           
           frameRatePerSec: 2,
@@ -813,12 +811,12 @@ class GameData {
           boundingBoxDimensions: new Vector2(255, 291),
 
           frames: [
-            new Rect(226, 1510, 255, 291),    // Animation frame 0
+            new Rect(226, 1510, 255, 291),      // Animation frame 0
             new Rect(1025, 1510, 255, 291),     // Animation frame 1
           ]
         },
 
-        // Animation 4
+        // Animation 6
         "Jumping Right": {
           
           frameRatePerSec: 2,
@@ -833,14 +831,44 @@ class GameData {
             new Rect(272, 610, 255, 291),     // Animation frame 1
           ]
         },
+
+        // Animation 7
+        "Right Quack": {
+  
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+  
+          boundingBoxDimensions: new Vector2(249, 290),
+  
+          frames: [
+            new Rect(410, 305, 249, 290),     // Animation frame 0
+            new Rect(750, 0, 220, 289),       // Animation frame 1
+          ]
+        },
+
+        // Animation 8
+        "Left Quack": {
+  
+          frameRatePerSec: 2,
+          maxLoopCount: -1,
+          startFrameIndex: 0,
+          endFrameIndex: 1,
+  
+          boundingBoxDimensions: new Vector2(249, 290),
+  
+          frames: [
+            new Rect(840, 1205, 249, 290),      // Animation frame 0
+            new Rect(530, 901, 220, 289),       // Animation frame 1
+          ]
+        },
       }
     };
 
     // HUNTER ENEMY ONE
-    
-    static HUNTER_START_POSITION = new Vector2(1800, 381);      //START POS
-    static HUNTER_RUN_VELOCITY = 0.8;                          // SPEED
-    static HUNTER_JUMP_VELOCITY = 0.5;                         // JUMP SPEED
+    static HUNTER_START_POSITION = new Vector2(1800, 381);      // START POS
+    static HUNTER_RUN_VELOCITY = 0.8;                           // SPEED
 
     // DIMENSIONS
     static HUNTER_WIDTH = 270;
@@ -982,25 +1010,25 @@ class GameData {
   
           frames: [
             new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 0
-            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 1
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 1
 
             new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
-            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 3
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 3
 
             new Rect(554, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
-            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 5
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 5
 
             new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 6
-            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 7
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 7
 
-            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 8
-            new Rect(278, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 9
+            new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 8
+            new Rect(278, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 9
 
             new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 10
-            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 11
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 11
 
             new Rect(830, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 12
-            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),    // Animation frame 13
+            new Rect(0, 919, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 13
          
           ]
         },
@@ -1008,7 +1036,7 @@ class GameData {
     };
 
     // HUNTER 3
-    static HUNTER3_START_POSITION = new Vector2(4100, 381);      //START POS
+    static HUNTER3_START_POSITION = new Vector2(4100, 381);      // START POS
     static HUNTER3_ANIMATION_DATA = {
 
       id: "Hunter3 Animation Data",
@@ -1032,7 +1060,7 @@ class GameData {
             new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 1
 
             new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
-            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 3
+            new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 3
 
             new Rect(556, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
             new Rect(830, 610, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 5
@@ -1063,10 +1091,10 @@ class GameData {
   
           frames: [
             new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 0
-            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 1
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 1
 
             new Rect(550, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 2
-            new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 3
+            new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 3
 
             new Rect(550, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 4
             new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 5
@@ -1075,13 +1103,13 @@ class GameData {
             new Rect(830, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 7
 
             new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 8
-            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 9
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 9
 
             new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 10
-            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 11
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 11
 
             new Rect(274, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 12
-            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),      // Animation frame 13
+            new Rect(0, 1530, this.HUNTER_WIDTH, this.HUNTER_HEIGHT),        // Animation frame 13
           ]
         },
       }
